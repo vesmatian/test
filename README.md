@@ -1852,5 +1852,163 @@ local Library do
     -- Return Library
     return Library
 end
+-- Funciones principales de Library para crear Window, Page, Section
+Library.Window = function(self, Data)
+    Data = Data or {}
+    
+    local Window = {
+        Pages = {},
+        FadeTime = 0.3
+    }
+    
+    local Items = Components:Window({
+        Parent = Library.Holder,
+        AnchorPoint = Data.AnchorPoint or Vector2New(0.5, 0.5),
+        Position = Data.Position or UDim2New(0.5, 0, 0.5, 0),
+        Size = Data.Size or UDim2New(0, 500, 0, 400),
+        Draggable = Data.Draggable ~= false,
+        Resizeable = Data.Resizeable or false
+    })
+    
+    Window.Holder = Items["Window"]
+    
+    -- Page Container
+    Items["Pages"] = Instances:Create("Frame", {
+        Parent = Items["Window"].Instance,
+        Name = "\0",
+        Position = UDim2New(0, 10, 0, 10),
+        Size = UDim2New(0, 120, 1, -20),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0
+    })
+    
+    Instances:Create("UIListLayout", {
+        Parent = Items["Pages"].Instance,
+        Padding = UDimNew(0, 8),
+        SortOrder = Enum.SortOrder.LayoutOrder
+    })
+    
+    -- Content Holder
+    Items["Content"] = Instances:Create("Frame", {
+        Parent = Items["Window"].Instance,
+        Name = "\0",
+        Position = UDim2New(0, 140, 0, 10),
+        Size = UDim2New(1, -150, 1, -20),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0
+    })
+    
+    function Window:Page(PageData)
+        local Page, PageItems = Components:WindowPage({
+            Name = PageData.Name or "Page",
+            Parent = Items["Pages"],
+            ContentHolder = Items["Content"],
+            Window = Window,
+            Columns = PageData.Columns or 2,
+            SubPages = PageData.SubPages or false
+        })
+        
+        function Page:Section(SectionData)
+            local Section = {}
+            local Side = SectionData.Side or 1
+            local Parent = Page.ColumnsData[Side]
+            
+            if not Parent then
+                warn("Invalid column side:", Side)
+                return Section
+            end
+            
+            local SectionItems = {}
+            
+            SectionItems["Section"] = Instances:Create("Frame", {
+                Parent = Parent.Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                Size = UDim2New(1, 0, 0, 0),
+                AutomaticSize = Enum.AutomaticSize.Y,
+                BorderSizePixel = 0
+            })
+            
+            SectionItems["Title"] = Instances:Create("TextLabel", {
+                Parent = SectionItems["Section"].Instance,
+                Name = "\0",
+                FontFace = Library.Font,
+                TextColor3 = FromRGB(235, 235, 235),
+                Text = SectionData.Name or "Section",
+                Size = UDim2New(1, 0, 0, 18),
+                BackgroundTransparency = 1,
+                TextSize = 11,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+            SectionItems["Title"]:AddToTheme({TextColor3 = "Text"})
+            SectionItems["Title"]:TextBorder()
+            
+            SectionItems["Container"] = Instances:Create("Frame", {
+                Parent = SectionItems["Section"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 0, 0, 20),
+                Size = UDim2New(1, 0, 0, 0),
+                BackgroundTransparency = 1,
+                AutomaticSize = Enum.AutomaticSize.Y,
+                BorderSizePixel = 0
+            })
+            
+            Instances:Create("UIListLayout", {
+                Parent = SectionItems["Container"].Instance,
+                Padding = UDimNew(0, 8),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+            
+            function Section:Toggle(ToggleData)
+                ToggleData.Parent = SectionItems["Container"]
+                ToggleData.Page = Page
+                ToggleData.Flag = ToggleData.Flag or Library:NextFlag()
+                return Components:Toggle(ToggleData)
+            end
+            
+            function Section:Button()
+                return Components:Button({
+                    Parent = SectionItems["Container"],
+                    Page = Page
+                })
+            end
+            
+            function Section:Slider(SliderData)
+                SliderData.Parent = SectionItems["Container"]
+                SliderData.Page = Page
+                SliderData.Flag = SliderData.Flag or Library:NextFlag()
+                return Components:Slider(SliderData)
+            end
+            
+            function Section:Label(LabelData)
+                LabelData.Parent = SectionItems["Container"]
+                LabelData.Page = Page
+                return Components:Label(LabelData)
+            end
+            
+            function Section:Dropdown(DropdownData)
+                DropdownData.Parent = SectionItems["Container"]
+                DropdownData.Page = Page
+                DropdownData.Flag = DropdownData.Flag or Library:NextFlag()
+                DropdownData.Items = DropdownData.Items or {}
+                return Components:Dropdown(DropdownData)
+            end
+            
+            function Section:Colorpicker(ColorpickerData)
+                ColorpickerData.Parent = SectionItems["Container"]
+                ColorpickerData.Page = Page
+                ColorpickerData.Flag = ColorpickerData.Flag or Library:NextFlag()
+                return Components:Colorpicker(ColorpickerData)
+            end
+            
+            return Section
+        end
+        
+        return Page
+    end
+    
+    return Window
+end
 
+-- AHORA SÍ: return Library
 return Library
