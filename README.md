@@ -1835,8 +1835,8 @@ end
                     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 }):AddToTheme({Color = "Outline"})
            Instances:Create("UICorner", {
-           Parent = Items["RealSlider"].Instance,
-           CornerRadius = UDimNew(0, 4)
+   Parent = Items["Indicator"].Instance,
+   CornerRadius = UDimNew(0, 3)
 })
                 Instances:Create("UIGradient", {
                     Parent = Items["Indicator"].Instance,
@@ -1846,10 +1846,7 @@ end
                 }):AddToTheme({Color = function()
                     return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
                 end})
-                Instances:Create("UICorner", {
-                Parent = Items["Accent"].Instance,
-                CornerRadius = UDimNew(0, 4)
-})
+
                 Items["Check"] = Instances:Create("ImageLabel", {
                     Parent = Items["Indicator"].Instance,
                     Name = "\0",
@@ -2042,10 +2039,6 @@ end
                         LineJoinMode = Enum.LineJoinMode.Miter,
                         ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                     }):AddToTheme({Color = "Outline"})
-    Instances:Create("UICorner", {
-    Parent = Items["Notification"].Instance,
-    CornerRadius = UDimNew(0, 6)
-})
                     SubItems["Text"] = Instances:Create("TextLabel", {
                         Parent = SubItems["NewButton"].Instance,
                         Name = "\0",
