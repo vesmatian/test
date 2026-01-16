@@ -1825,7 +1825,7 @@ end
                     Size = UDim2New(0, 12, 0, 12),
                     BorderSizePixel = 2,
                     BackgroundColor3 = FromRGB(0, 0, 0)
-                })  Items["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+                })  Items["Indicator"]:AddToTheme({BorderColor3 = "Border"})
 
                 Instances:Create("UIStroke", {
                     Parent = Items["Indicator"].Instance,
@@ -2218,23 +2218,24 @@ end
           Parent = Items["Dragger"].Instance,
           CornerRadius = UDimNew(0, 6)
 })
-                Items["Value"] = Instances:Create("TextButton", {
-                    Parent = Items["Slider"].Instance,
-                    Name = "\0",
-                    FontFace = Library.Font,
-                    TextColor3 = FromRGB(235, 235, 235),
-                    BorderColor3 = FromRGB(0, 0, 0),
-                    Text = "50%",
-                    AnchorPoint = Vector2New(1, 0),
-                    Size = UDim2New(0, 0, 0, 15),
-                    BackgroundTransparency = 1,
-                    Position = UDim2New(1, 0, 0, 0),
-                    BorderSizePixel = 0,
-                    AutomaticSize = Enum.AutomaticSize.X,
-                    TextSize = 9,
-                    AutoButtonColor = false,
-                    BackgroundColor3 = FromRGB(255, 255, 255)
-                })  Items["Value"]:AddToTheme({TextColor3 = "Text"})
+                Items["Value"] = Instances:Create("TextBox", {
+            Parent = Items["Slider"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = "50%",
+            AnchorPoint = Vector2New(1, 0),
+            Size = UDim2New(0, 0, 0, 15),
+            BackgroundTransparency = 1,
+            Position = UDim2New(1, 0, 0, 0),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 9,
+            TextEditable = false,  -- ⭐ AGREGAR ESTO
+            ClearTextOnFocus = false,  -- ⭐ AGREGAR ESTO
+            BackgroundColor3 = FromRGB(255, 255, 255)
+})  Items["Value"]:AddToTheme({TextColor3 = "Text"})
 
                 Items["Value"]:TextBorder()
             end
