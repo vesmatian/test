@@ -2218,7 +2218,7 @@ end
           Parent = Items["Dragger"].Instance,
           CornerRadius = UDimNew(0, 6)
 })
-                Items["Value"] = Instances:Create("TextLabel", {
+                Items["Value"] = Instances:Create("TextButton", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
                     FontFace = Library.Font,
@@ -2232,13 +2232,14 @@ end
                     BorderSizePixel = 0,
                     AutomaticSize = Enum.AutomaticSize.X,
                     TextSize = 9,
+                    AutoButtonColor = false,
                     BackgroundColor3 = FromRGB(255, 255, 255)
                 })  Items["Value"]:AddToTheme({TextColor3 = "Text"})
 
                 Items["Value"]:TextBorder()
             end
 -- Hacer el valor editable
-Items["Value"]:Connect("MouseButton1Click", function()
+    Items["Value"]:Connect("MouseButton1Click", function()
     Items["Value"].Instance.Text = ""
     Items["Value"].Instance.PlaceholderText = "..."
     Items["Value"].Instance.ClearTextOnFocus = false
