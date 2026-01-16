@@ -1824,7 +1824,7 @@ end
                     BorderColor3 = FromRGB(12, 12, 12),
                     Size = UDim2New(0, 12, 0, 12),
                     BorderSizePixel = 2,
-                    BackgroundColor3 = FromRGB(30, 36, 31)
+                    BackgroundColor3 = FromRGB(0, 0, 0)
                 })  Items["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
 
                 Instances:Create("UIStroke", {
@@ -1834,7 +1834,10 @@ end
                     LineJoinMode = Enum.LineJoinMode.Miter,
                     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 }):AddToTheme({Color = "Outline"})
-
+           Instances:Create("UICorner", {
+           Parent = Items["RealSlider"].Instance,
+           CornerRadius = UDimNew(0, 4)
+})
                 Instances:Create("UIGradient", {
                     Parent = Items["Indicator"].Instance,
                     Name = "\0",
@@ -1843,7 +1846,10 @@ end
                 }):AddToTheme({Color = function()
                     return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
                 end})
-
+                Instances:Create("UICorner", {
+                Parent = Items["Accent"].Instance,
+                CornerRadius = UDimNew(0, 4)
+})
                 Items["Check"] = Instances:Create("ImageLabel", {
                     Parent = Items["Indicator"].Instance,
                     Name = "\0",
@@ -1911,27 +1917,26 @@ end
                 Items["Text"].Instance.Text = Text
             end
 
-            function Toggle:Set(Value)
-                Toggle.Value = Value 
-                Library.Flags[Toggle.Flag] = Value 
+function Toggle:Set(Value)
+    Toggle.Value = Value 
+    Library.Flags[Toggle.Flag] = Value 
 
-                if Toggle.Value then
-                    Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent", BorderColor3 = "Border"})
-                    Items["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
-                    task.wait(0.05)
-                    Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0, Size = UDim2New(1, 2, 1, 2)})
-                else
-                    Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
-                    Items["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Element})
-                    task.wait(0.05)
-                    Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 1, Size = UDim2New(0, 0, 0, 0)})
-                end
+    if Toggle.Value then
+        Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent", BorderColor3 = "Border"})
+        Items["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
+        task.wait(0.05)
+        Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0, Size = UDim2New(1, 2, 1, 2)})
+    else
+        Items["Indicator"].Instance.BackgroundColor3 = FromRGB(0, 0, 0)
+        Items["Indicator"]:ChangeItemTheme({BorderColor3 = "Border"})
+        task.wait(0.05)
+        Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 1, Size = UDim2New(0, 0, 0, 0)})
+    end
 
-                if Data.Callback then 
-                    Library:SafeCall(Data.Callback, Toggle.Value)
-                end
-            end
-
+    if Data.Callback then 
+        Library:SafeCall(Data.Callback, Toggle.Value)
+    end
+end
             function Toggle:SetVisibility(Bool)
                 Items["Toggle"].Instance.Visible = Bool 
             end
@@ -2037,7 +2042,10 @@ end
                         LineJoinMode = Enum.LineJoinMode.Miter,
                         ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                     }):AddToTheme({Color = "Outline"})
-
+    Instances:Create("UICorner", {
+    Parent = Items["Notification"].Instance,
+    CornerRadius = UDimNew(0, 6)
+})
                     SubItems["Text"] = Instances:Create("TextLabel", {
                         Parent = SubItems["NewButton"].Instance,
                         Name = "\0",
@@ -2206,7 +2214,10 @@ end
                     LineJoinMode = Enum.LineJoinMode.Miter,
                     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 }):AddToTheme({Color = "Border"})
-
+          Instances:Create("UICorner", {
+          Parent = Items["Dragger"].Instance,
+          CornerRadius = UDimNew(0, 6)
+})
                 Items["Value"] = Instances:Create("TextLabel", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
@@ -2226,7 +2237,41 @@ end
 
                 Items["Value"]:TextBorder()
             end
+-- Hacer el valor editable
+Items["Value"]:Connect("MouseButton1Click", function()
+    Items["Value"].Instance.Text = ""
+    Items["Value"].Instance.PlaceholderText = "..."
+    Items["Value"].Instance.ClearTextOnFocus = false
+    
+    local FocusConnection
+    FocusConnection = Items["Value"].Instance.FocusLost:Connect(function()
+        local InputText = Items["Value"].Instance.Text
+        local NumberOnly = string.match(InputText, "%-?%d+%.?%d*")
+        
+        if NumberOnly and tonumber(NumberOnly) then
+            Slider:Set(tonumber(NumberOnly))
+        else
+            Items["Value"].Instance.Text = StringFormat("%s%s", tostring(Slider.Value), Data.Suffix)
+        end
+        
+        Items["Value"].Instance.PlaceholderText = ""
+        if FocusConnection then
+            FocusConnection:Disconnect()
+        end
+    end)
+    
+    Items["Value"].Instance:CaptureFocus()
+end)
 
+    Items["Value"].Instance:GetPropertyChangedSignal("Text"):Connect(function()
+    if Items["Value"].Instance:IsFocused() then
+        local Text = Items["Value"].Instance.Text
+        local Filtered = string.gsub(Text, "[^%d%.%-]", "")
+        if Text ~= Filtered then
+            Items["Value"].Instance.Text = Filtered
+        end
+    end
+end)
             function Slider:Get()
                 return Slider.Value
             end
@@ -5732,57 +5777,88 @@ Library.Pages.SubPage = function(self, Data)
     return setmetatable(NewSubPage, Library.Pages)
 end
 
-    Library.Pages.Section = function(self, Data)
-        Data = Data or { }
+Library.Pages.Section = function(self, Data)
+    Data = Data or { }
 
-        local Section = {
-            Window = self.Window,
-            Page = self,
+    local Section = {
+        Window = self.Window,
+        Page = self,
 
-            Name = Data.Name or Data.name or "Section",
-            Side = Data.Side or Data.side or 1,
+        Name = Data.Name or Data.name or "Section",
+        Side = Data.Side or Data.side or 1,
+        Icon = Data.Icon or Data.icon or nil,
 
-            Items = { }
-        }
+        Items = { }
+    }
 
-        local Items = { } do
-            Items["Section"] = Instances:Create("Frame", {
-                Parent = Section.Page.ColumnsData[Section.Side].Instance,
-                Name = "\0",
-                Size = UDim2New(1, 0, 0, 25),
-                BorderColor3 = FromRGB(42, 49, 45),
-                BorderSizePixel = 2,
-                AutomaticSize = Enum.AutomaticSize.Y,
-                BackgroundColor3 = FromRGB(20, 24, 21)
-            })  Items["Section"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
+    local Items = { } do
+        Items["Section"] = Instances:Create("Frame", {
+            Parent = Section.Page.ColumnsData[Section.Side].Instance,
+            Name = "\0",
+            Size = UDim2New(1, 0, 0, 25),
+            BorderColor3 = FromRGB(42, 49, 45),
+            BorderSizePixel = 2,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(20, 24, 21)
+        })  Items["Section"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
 
-            Items["Section"]:Border("Border")
+        Items["Section"]:Border("Border")
 
-            Items["Liner"] = Instances:Create("Frame", {
+        Items["Liner"] = Instances:Create("Frame", {
+            Parent = Items["Section"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 1),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(202, 243, 255)
+        })  Items["Liner"]:AddToTheme({BackgroundColor3  = "Accent"})
+
+        Items["Glow"] = Instances:Create("Frame", {
+            Parent = Items["Section"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 15),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(202, 243, 255)
+        })  Items["Glow"]:AddToTheme({BackgroundColor3  = "Accent"})
+
+        Instances:Create("UIGradient", {
+            Parent = Items["Glow"].Instance,
+            Name = "\0",
+            Rotation = 90,
+            Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(0.193, 0.8687499761581421), NumSequenceKeypoint(0.504, 0.96875), NumSequenceKeypoint(1, 1)}
+        })
+
+        -- NUEVO: Agregar icono o espacio vacío
+        if Section.Icon then
+            Items["Icon"] = Instances:Create("ImageLabel", {
                 Parent = Items["Section"].Instance,
                 Name = "\0",
-                BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, 0, 0, 1),
-                BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(202, 243, 255)
-            })  Items["Liner"]:AddToTheme({BackgroundColor3  = "Accent"})
+                ImageColor3 = FromRGB(235, 235, 235),
+                ScaleType = Enum.ScaleType.Fit,
+                Image = "rbxassetid://" .. tostring(Section.Icon),
+                BackgroundTransparency = 1,
+                Position = UDim2New(0, 6, 0, 5),
+                Size = UDim2New(0, 14, 0, 14),
+            })  Items["Icon"]:AddToTheme({ImageColor3 = "Text"})
 
-            Items["Glow"] = Instances:Create("Frame", {
+            Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Section"].Instance,
                 Name = "\0",
+                FontFace = Library.Font,
+                TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, 0, 0, 15),
+                Text = Section.Name,
+                Size = UDim2New(0, 0, 0, 15),
+                BackgroundTransparency = 1,
+                Position = UDim2New(0, 26, 0, 5),
                 BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(202, 243, 255)
-            })  Items["Glow"]:AddToTheme({BackgroundColor3  = "Accent"})
-
-            Instances:Create("UIGradient", {
-                Parent = Items["Glow"].Instance,
-                Name = "\0",
-                Rotation = 90,
-                Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(0.193, 0.8687499761581421), NumSequenceKeypoint(0.504, 0.96875), NumSequenceKeypoint(1, 1)}
-            })
-
+                AutomaticSize = Enum.AutomaticSize.X,
+                TextSize = 9,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
+        else
+            -- Espacio vacío de la misma altura
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Section"].Instance,
                 Name = "\0",
@@ -5798,39 +5874,40 @@ end
                 TextSize = 9,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
-
-            Items["Text"]:TextBorder()
-
-            Instances:Create("UIPadding", {
-                Parent = Items["Section"].Instance,
-                Name = "\0",
-                PaddingBottom = UDimNew(0, 8)
-            })
-
-            Items["Content"] = Instances:Create("Frame", {
-                Parent = Items["Section"].Instance,
-                Name = "\0",
-                BorderColor3 = FromRGB(0, 0, 0),
-                BackgroundTransparency = 1,
-                Position = UDim2New(0, 10, 0, 26),
-                Size = UDim2New(1, -20, 0, 0),
-                BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.Y,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })
-
-            Instances:Create("UIListLayout", {
-                Parent = Items["Content"].Instance,
-                Name = "\0",
-                Padding = UDimNew(0, 8),
-                SortOrder = Enum.SortOrder.LayoutOrder
-            })
-
-            Section.Items = Items
         end
 
-        return setmetatable(Section, Library.Sections)
+        Items["Text"]:TextBorder()
+
+        Instances:Create("UIPadding", {
+            Parent = Items["Section"].Instance,
+            Name = "\0",
+            PaddingBottom = UDimNew(0, 8)
+        })
+
+        Items["Content"] = Instances:Create("Frame", {
+            Parent = Items["Section"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(0, 0, 0),
+            BackgroundTransparency = 1,
+            Position = UDim2New(0, 10, 0, 26),
+            Size = UDim2New(1, -20, 0, 0),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })
+
+        Instances:Create("UIListLayout", {
+            Parent = Items["Content"].Instance,
+            Name = "\0",
+            Padding = UDimNew(0, 8),
+            SortOrder = Enum.SortOrder.LayoutOrder
+        })
+
+        Section.Items = Items
     end
+
+    return setmetatable(Section, Library.Sections)
+end
     
     Library.Sections.Toggle = function(self, Data)
         Data = Data or { }
