@@ -6396,5 +6396,837 @@ end
         return SettingsPage
     end
 end
+-- ============================================================================
+-- SISTEMA DE MINI MENÚS DE CONFIGURACIÓN (SETTINGS MENU)
+-- Sistema 100% INDEPENDIENTE - NO modifica código existente
+-- ============================================================================
+-- 
+-- INSTRUCCIONES DE INSTALACIÓN:
+-- Pega este código COMPLETO al FINAL de tu librería, justo ANTES del "end" final
+-- (aproximadamente en la línea 6390+, después de todas las definiciones de Components)
+--
+-- CÓMO USAR:
+-- Después de crear cualquier Toggle, Keybind, Slider, Dropdown o Label, llama a :AddSettings()
+--
+-- EJEMPLO DE USO:
+--[[
+    local MyToggle = Page:AddToggle({
+        Name = "Auto Farm",
+        Default = false,
+        Callback = function(Value)
+            print("Auto Farm:", Value)
+        end
+    })
+    
+    MyToggle:AddSettings({
+        {
+            Type = "Slider",
+            Name = "Velocidad",
+            Min = 0,
+            Max = 100,
+            Default = 50,
+            Suffix = "%",
+            Callback = function(Value)
+                print("Velocidad configurada a:", Value)
+            end
+        },
+        {
+            Type = "Toggle",
+            Name = "Auto Activar",
+            Default = true,
+            Callback = function(Value)
+                print("Auto Activar:", Value)
+            end
+        },
+        {
+            Type = "Keybind",
+            Name = "Tecla Rápida",
+            Default = {Key = "E", Mode = "Toggle"},
+            Callback = function(KeyData, State)
+                print("Keybind:", KeyData.Key, "Estado:", State)
+            end
+        }
+    }, 10734950309) -- El segundo parámetro es opcional (Asset ID del ícono, por defecto es tuerca)
+]]--
+-- ============================================================================
+
+do
+    -- =============================
+    -- COMPONENTES MINI (COMPACTOS)
+    -- =============================
+    
+    local MiniComponents = {}
+    
+    -- MINI TOGGLE (Versión compacta 10x10px)
+    MiniComponents.MiniToggle = function(Data)
+        local MiniToggle = {
+            Value = false,
+            Callback = Data.Callback
+        }
+        
+        local Items = {}
+        
+        Items["Container"] = Instances:Create("Frame", {
+            Parent = Data.Parent.Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 18),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        
+        Items["Toggle"] = Instances:Create("TextButton", {
+            Parent = Items["Container"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(0, 0, 0),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = "",
+            AutoButtonColor = false,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 1, 0),
+            BorderSizePixel = 0,
+            TextSize = 14,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        
+        Items["Indicator"] = Instances:Create("Frame", {
+            Parent = Items["Toggle"].Instance,
+            Name = "\0",
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 0, 0.5, 0),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(0, 10, 0, 10),
+            BorderSizePixel = 1,
+            BackgroundColor3 = FromRGB(30, 36, 31),
+            ZIndex = 25
+        })
+        Items["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+        
+        Items["Check"] = Instances:Create("ImageLabel", {
+            Parent = Items["Indicator"].Instance,
+            Name = "\0",
+            ImageColor3 = FromRGB(0, 0, 0),
+            ScaleType = Enum.ScaleType.Fit,
+            ImageTransparency = 1,
+            BorderColor3 = FromRGB(0, 0, 0),
+            AnchorPoint = Vector2New(0.5, 0.5),
+            Image = "rbxassetid://108016671469439",
+            BackgroundTransparency = 1,
+            Position = UDim2New(0.5, 0, 0.5, 0),
+            Size = UDim2New(1, 1, 1, 1),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        
+        Items["Text"] = Instances:Create("TextLabel", {
+            Parent = Items["Toggle"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = Data.Name,
+            Size = UDim2New(0, 0, 0, 15),
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 16, 0.5, 0),
+            BackgroundTransparency = 1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 8,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        Items["Text"]:AddToTheme({TextColor3 = "Text"})
+        
+        function MiniToggle:Set(Value)
+            MiniToggle.Value = Value
+            
+            if MiniToggle.Value then
+                Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent", BorderColor3 = "Border"})
+                Items["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
+                task.wait(0.05)
+                Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0, Size = UDim2New(1, 1, 1, 1)})
+            else
+                Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+                Items["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Element})
+                task.wait(0.05)
+                Items["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 1, Size = UDim2New(0, 0, 0, 0)})
+            end
+            
+            if MiniToggle.Callback then
+                Library:SafeCall(MiniToggle.Callback, MiniToggle.Value)
+            end
+        end
+        
+        function MiniToggle:Get()
+            return MiniToggle.Value
+        end
+        
+        Items["Toggle"]:Connect("MouseButton1Down", function()
+            MiniToggle:Set(not MiniToggle.Value)
+        end)
+        
+        MiniToggle:Set(Data.Default or false)
+        
+        return MiniToggle, Items
+    end
+    
+    -- MINI SLIDER (Versión compacta 8px alto)
+    MiniComponents.MiniSlider = function(Data)
+        local MiniSlider = {
+            Value = 0,
+            Sliding = false,
+            Callback = Data.Callback
+        }
+        
+        local Items = {}
+        
+        Items["Container"] = Instances:Create("Frame", {
+            Parent = Data.Parent.Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 22),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        
+        Items["Text"] = Instances:Create("TextLabel", {
+            Parent = Items["Container"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = Data.Name,
+            BackgroundTransparency = 1,
+            Size = UDim2New(0, 0, 0, 12),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 8,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        Items["Text"]:AddToTheme({TextColor3 = "Text"})
+        
+        Items["RealSlider"] = Instances:Create("TextButton", {
+            Parent = Items["Container"].Instance,
+            AutoButtonColor = false,
+            Text = "",
+            Name = "\0",
+            AnchorPoint = Vector2New(0, 1),
+            Position = UDim2New(0, 0, 1, 0),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(1, 0, 0, 8),
+            BorderSizePixel = 1,
+            BackgroundColor3 = FromRGB(30, 36, 31),
+            ZIndex = 25
+        })
+        Items["RealSlider"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+        
+        Items["Accent"] = Instances:Create("Frame", {
+            Parent = Items["RealSlider"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(0.5, 0, 1, 0),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(202, 243, 255),
+            ZIndex = 25
+        })
+        Items["Accent"]:AddToTheme({BackgroundColor3 = "Accent"})
+        
+        Items["Value"] = Instances:Create("TextLabel", {
+            Parent = Items["Container"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = "50",
+            AnchorPoint = Vector2New(1, 0),
+            Size = UDim2New(0, 0, 0, 12),
+            BackgroundTransparency = 1,
+            Position = UDim2New(1, 0, 0, 0),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 8,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        Items["Value"]:AddToTheme({TextColor3 = "Text"})
+        
+        function MiniSlider:Set(Value)
+            MiniSlider.Value = Library:Round(MathClamp(Value, Data.Min, Data.Max), Data.Decimals or 1)
+            
+            Items["Accent"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2New((MiniSlider.Value - Data.Min) / (Data.Max - Data.Min), 0, 1, 0)})
+            Items["Value"].Instance.Text = StringFormat("%s%s", tostring(MiniSlider.Value), Data.Suffix or "")
+            
+            if MiniSlider.Callback then
+                Library:SafeCall(MiniSlider.Callback, MiniSlider.Value)
+            end
+        end
+        
+        function MiniSlider:Get()
+            return MiniSlider.Value
+        end
+        
+        local InputChanged
+        
+        Items["RealSlider"]:Connect("InputBegan", function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                MiniSlider.Sliding = true
+                
+                local SizeX = (Mouse.X - Items["RealSlider"].Instance.AbsolutePosition.X) / Items["RealSlider"].Instance.AbsoluteSize.X
+                local Value = ((Data.Max - Data.Min) * SizeX) + Data.Min
+                
+                MiniSlider:Set(Value)
+                
+                if InputChanged then
+                    return
+                end
+                
+                InputChanged = Input.Changed:Connect(function()
+                    if Input.UserInputState == Enum.UserInputState.End then
+                        MiniSlider.Sliding = false
+                        
+                        InputChanged:Disconnect()
+                        InputChanged = nil
+                    end
+                end)
+            end
+        end)
+        
+        Library:Connect(UserInputService.InputChanged, function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+                if MiniSlider.Sliding then
+                    local SizeX = (Mouse.X - Items["RealSlider"].Instance.AbsolutePosition.X) / Items["RealSlider"].Instance.AbsoluteSize.X
+                    local Value = ((Data.Max - Data.Min) * SizeX) + Data.Min
+                    
+                    MiniSlider:Set(Value)
+                end
+            end
+        end)
+        
+        MiniSlider:Set(Data.Default or Data.Min)
+        
+        return MiniSlider, Items
+    end
+    
+    -- MINI KEYBIND (Versión compacta 14px alto)
+    MiniComponents.MiniKeybind = function(Data)
+        local MiniKeybind = {
+            Value = {Key = tostring(Enum.KeyCode.E), Mode = "Toggle"},
+            State = false,
+            Callback = Data.Callback,
+            Listening = false
+        }
+        
+        local Items = {}
+        
+        Items["Container"] = Instances:Create("Frame", {
+            Parent = Data.Parent.Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 18),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        
+        Items["Text"] = Instances:Create("TextLabel", {
+            Parent = Items["Container"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = Data.Name,
+            Size = UDim2New(0, 0, 0, 15),
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 0, 0.5, 0),
+            BackgroundTransparency = 1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 8,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 25
+        })
+        Items["Text"]:AddToTheme({TextColor3 = "Text"})
+        
+        Items["Keybind"] = Instances:Create("TextButton", {
+            Parent = Items["Container"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Text = "E",
+            AutoButtonColor = false,
+            AnchorPoint = Vector2New(1, 0.5),
+            BorderSizePixel = 1,
+            Position = UDim2New(1, 0, 0.5, 0),
+            TextSize = 8,
+            Size = UDim2New(0, 0, 0, 14),
+            AutomaticSize = Enum.AutomaticSize.X,
+            BackgroundColor3 = FromRGB(30, 36, 31),
+            ZIndex = 25
+        })
+        Items["Keybind"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border", TextColor3 = "Text"})
+        
+        Instances:Create("UIPadding", {
+            Parent = Items["Keybind"].Instance,
+            Name = "\0",
+            PaddingRight = UDimNew(0, 4),
+            PaddingLeft = UDimNew(0, 4)
+        })
+        
+        function MiniKeybind:Set(KeybindData)
+            MiniKeybind.Value = KeybindData
+            
+            local KeyString = Keys[StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "")] or StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "")
+            Items["Keybind"].Instance.Text = KeyString
+            
+            if MiniKeybind.Callback then
+                Library:SafeCall(MiniKeybind.Callback, MiniKeybind.Value)
+            end
+        end
+        
+        function MiniKeybind:Get()
+            return MiniKeybind.Value
+        end
+        
+        function MiniKeybind:StartListening()
+            MiniKeybind.Listening = true
+            Items["Keybind"].Instance.Text = "..."
+            Items["Keybind"]:ChangeItemTheme({BackgroundColor3 = "Accent", BorderColor3 = "Border"})
+            Items["Keybind"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
+        end
+        
+        function MiniKeybind:StopListening()
+            MiniKeybind.Listening = false
+            local KeyString = Keys[StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "")] or StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "")
+            Items["Keybind"].Instance.Text = KeyString
+            Items["Keybind"]:ChangeItemTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+            Items["Keybind"]:Tween(nil, {BackgroundColor3 = Library.Theme.Element})
+        end
+        
+        Items["Keybind"]:Connect("MouseButton1Down", function()
+            if MiniKeybind.Listening then
+                MiniKeybind:Set({Key = tostring(Enum.KeyCode.Unknown), Mode = MiniKeybind.Value.Mode})
+                MiniKeybind:StopListening()
+            else
+                MiniKeybind:StartListening()
+            end
+        end)
+        
+        Library:Connect(UserInputService.InputBegan, function(Input)
+            if not MiniKeybind.Listening then
+                if Input.KeyCode.Name == StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "") then
+                    if MiniKeybind.Value.Mode == "Toggle" then
+                        MiniKeybind.State = not MiniKeybind.State
+                    else
+                        MiniKeybind.State = true
+                    end
+                    
+                    if MiniKeybind.Callback then
+                        Library:SafeCall(MiniKeybind.Callback, MiniKeybind.Value, MiniKeybind.State)
+                    end
+                end
+                return
+            end
+            
+            if Input.UserInputType == Enum.UserInputType.Keyboard then
+                MiniKeybind:Set({Key = tostring(Input.KeyCode), Mode = MiniKeybind.Value.Mode})
+                MiniKeybind:StopListening()
+            end
+        end)
+        
+        Library:Connect(UserInputService.InputEnded, function(Input)
+            if Input.KeyCode.Name == StringGSub(tostring(MiniKeybind.Value.Key), "Enum.KeyCode.", "") then
+                if MiniKeybind.Value.Mode == "Hold" then
+                    MiniKeybind.State = false
+                    
+                    if MiniKeybind.Callback then
+                        Library:SafeCall(MiniKeybind.Callback, MiniKeybind.Value, MiniKeybind.State)
+                    end
+                end
+            end
+        end)
+        
+        MiniKeybind:Set(Data.Default or {Key = tostring(Enum.KeyCode.E), Mode = "Toggle"})
+        
+        return MiniKeybind, Items
+    end
+    
+    -- ===========================
+    -- SISTEMA PRINCIPAL DE MENÚ
+    -- ===========================
+    
+    local SettingsMenuSystem = {}
+    
+    SettingsMenuSystem.Create = function(ParentComponent, SettingsData, IconAssetId)
+        local Menu = {
+            IsOpen = false,
+            ParentComponent = ParentComponent,
+            Settings = {},
+            MiniElements = {}
+        }
+        
+        local Items = {}
+        local RenderStepped
+        
+        -- Determinar dónde agregar el ícono basado en el tipo de componente
+        local IconParent
+        if ParentComponent.Items["SubElements"] then
+            -- Toggle, Label tienen SubElements
+            IconParent = ParentComponent.Items["SubElements"].Instance
+        elseif ParentComponent.Items["Toggle"] then
+            -- Slider, Dropdown tienen Toggle como contenedor principal
+            IconParent = ParentComponent.Items["Toggle"].Instance
+        elseif ParentComponent.Items["Label"] then
+            -- Label
+            IconParent = ParentComponent.Items["Label"].Instance
+        elseif ParentComponent.Items["KeyButton"] then
+            -- Keybind
+            IconParent = ParentComponent.Items["KeyButton"].Instance.Parent
+        else
+            -- Fallback: usar el primer elemento disponible
+            for _, Item in ParentComponent.Items do
+                if Item.Instance then
+                    IconParent = Item.Instance
+                    break
+                end
+            end
+        end
+        
+        -- Crear el ícono de tuerca
+        Items["Icon"] = Instances:Create("ImageButton", {
+            Parent = IconParent,
+            Name = "\0",
+            ImageColor3 = FromRGB(235, 235, 235),
+            ScaleType = Enum.ScaleType.Fit,
+            BorderColor3 = FromRGB(0, 0, 0),
+            AnchorPoint = Vector2New(0.5, 0.5),
+            Image = IconAssetId and ("rbxassetid://" .. tostring(IconAssetId)) or "rbxassetid://10734950309",
+            BackgroundTransparency = 1,
+            Position = UDim2New(0.5, 0, 0.5, 0),
+            Size = UDim2New(0, 12, 0, 12),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            AutoButtonColor = false,
+            ZIndex = 10
+        })
+        Items["Icon"]:AddToTheme({ImageColor3 = "Text"})
+        
+        -- Crear el menú popup
+        Items["MenuFrame"] = Instances:Create("Frame", {
+            Parent = Library.UnusedHolder.Instance,
+            Name = "\0",
+            Visible = false,
+            BorderColor3 = FromRGB(12, 12, 12),
+            BorderSizePixel = 2,
+            Position = UDim2New(0, 0, 0, 0),
+            Size = UDim2New(0, 180, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(20, 24, 21),
+            ZIndex = 25
+        })
+        Items["MenuFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
+        
+        Instances:Create("UIStroke", {
+            Parent = Items["MenuFrame"].Instance,
+            Name = "\0",
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }):AddToTheme({Color = "Outline"})
+        
+        Items["ContentHolder"] = Instances:Create("Frame", {
+            Parent = Items["MenuFrame"].Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 1, 0),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            AutomaticSize = Enum.AutomaticSize.Y,
+            ZIndex = 25
+        })
+        
+        Instances:Create("UIPadding", {
+            Parent = Items["ContentHolder"].Instance,
+            Name = "\0",
+            PaddingTop = UDimNew(0, 8),
+            PaddingBottom = UDimNew(0, 8),
+            PaddingRight = UDimNew(0, 8),
+            PaddingLeft = UDimNew(0, 8)
+        })
+        
+        Instances:Create("UIListLayout", {
+            Parent = Items["ContentHolder"].Instance,
+            Name = "\0",
+            Padding = UDimNew(0, 6),
+            SortOrder = Enum.SortOrder.LayoutOrder
+        })
+        
+        -- Funciones del menú
+        function Menu:Open()
+            if Menu.IsOpen then return end
+            
+            Menu.IsOpen = true
+            Items["MenuFrame"].Instance.Visible = true
+            Items["MenuFrame"].Instance.Parent = Library.Holder.Instance
+            
+            -- Animar ícono
+            Items["Icon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+            Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent, Rotation = 90})
+            
+            -- Posicionar menú relativo al ícono
+            RenderStepped = RunService.RenderStepped:Connect(function()
+                local IconPos = Items["Icon"].Instance.AbsolutePosition
+                local IconSize = Items["Icon"].Instance.AbsoluteSize
+                
+                Items["MenuFrame"].Instance.Position = UDim2New(0, IconPos.X - 170, 0, IconPos.Y + IconSize.Y + 5)
+            end)
+            
+            -- Fade in
+            local Descendants = Items["MenuFrame"].Instance:GetDescendants()
+            TableInsert(Descendants, Items["MenuFrame"].Instance)
+            
+            for _, Value in Descendants do
+                local TransparencyProperty = Tween:GetProperty(Value)
+                
+                if not TransparencyProperty then
+                    continue
+                end
+                
+                if type(TransparencyProperty) == "table" then
+                    for _, Property in TransparencyProperty do
+                        Tween:FadeItem(Value, Property, true, Library.FadeSpeed)
+                    end
+                else
+                    Tween:FadeItem(Value, TransparencyProperty, true, Library.FadeSpeed)
+                end
+            end
+            
+            -- Agregar a OpenFrames
+            Library.OpenFrames[Menu] = Menu
+        end
+        
+        function Menu:Close()
+            if not Menu.IsOpen then return end
+            
+            Menu.IsOpen = false
+            
+            -- Animar ícono
+            Items["Icon"]:ChangeItemTheme({ImageColor3 = "Text"})
+            Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Text, Rotation = 0})
+            
+            -- Detener RenderStepped
+            if RenderStepped then
+                RenderStepped:Disconnect()
+                RenderStepped = nil
+            end
+            
+            -- Fade out
+            local Descendants = Items["MenuFrame"].Instance:GetDescendants()
+            TableInsert(Descendants, Items["MenuFrame"].Instance)
+            
+            local LastTween
+            
+            for _, Value in Descendants do
+                local TransparencyProperty = Tween:GetProperty(Value)
+                
+                if not TransparencyProperty then
+                    continue
+                end
+                
+                if type(TransparencyProperty) == "table" then
+                    for _, Property in TransparencyProperty do
+                        LastTween = Tween:FadeItem(Value, Property, false, Library.FadeSpeed)
+                    end
+                else
+                    LastTween = Tween:FadeItem(Value, TransparencyProperty, false, Library.FadeSpeed)
+                end
+            end
+            
+            if LastTween then
+                Library:Connect(LastTween.Tween.Completed, function()
+                    Items["MenuFrame"].Instance.Visible = false
+                    Items["MenuFrame"].Instance.Parent = Library.UnusedHolder.Instance
+                end)
+            end
+            
+            -- Remover de OpenFrames
+            if Library.OpenFrames[Menu] then
+                Library.OpenFrames[Menu] = nil
+            end
+        end
+        
+        function Menu:Toggle()
+            if Menu.IsOpen then
+                Menu:Close()
+            else
+                Menu:Open()
+            end
+        end
+        
+        function Menu:SetOpen(Bool)
+            if Bool then
+                Menu:Open()
+            else
+                Menu:Close()
+            end
+        end
+        
+        -- Agregar elementos al menú según SettingsData
+        for _, Setting in SettingsData do
+            local MiniElement
+            
+            if Setting.Type == "Toggle" then
+                MiniElement = MiniComponents.MiniToggle({
+                    Parent = Items["ContentHolder"],
+                    Name = Setting.Name,
+                    Default = Setting.Default,
+                    Callback = Setting.Callback
+                })
+                
+            elseif Setting.Type == "Slider" then
+                MiniElement = MiniComponents.MiniSlider({
+                    Parent = Items["ContentHolder"],
+                    Name = Setting.Name,
+                    Min = Setting.Min,
+                    Max = Setting.Max,
+                    Default = Setting.Default,
+                    Decimals = Setting.Decimals or 1,
+                    Suffix = Setting.Suffix or "",
+                    Callback = Setting.Callback
+                })
+                
+            elseif Setting.Type == "Keybind" then
+                MiniElement = MiniComponents.MiniKeybind({
+                    Parent = Items["ContentHolder"],
+                    Name = Setting.Name,
+                    Default = Setting.Default,
+                    Callback = Setting.Callback
+                })
+            end
+            
+            if MiniElement then
+                TableInsert(Menu.MiniElements, MiniElement)
+            end
+        end
+        
+        -- Eventos del ícono
+        Items["Icon"]:Connect("MouseButton1Down", function()
+            Menu:Toggle()
+        end)
+        
+        Items["Icon"]:OnHover(function()
+            if not Menu.IsOpen then
+                Items["Icon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
+            end
+        end)
+        
+        Items["Icon"]:OnHoverLeave(function()
+            if not Menu.IsOpen then
+                Items["Icon"]:ChangeItemTheme({ImageColor3 = "Text"})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
+            end
+        end)
+        
+        -- Cerrar al hacer clic fuera
+        Library:Connect(UserInputService.InputBegan, function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                if not Menu.IsOpen then
+                    return
+                end
+                
+                if Library:IsMouseOverFrame(Items["MenuFrame"]) or Library:IsMouseOverFrame(Items["Icon"]) then
+                    return
+                end
+                
+                Menu:Close()
+            end
+        end)
+        
+        return Menu
+    end
+    
+    -- ========================================
+    -- MÉTODO :AddSettings() PARA COMPONENTES
+    -- ========================================
+    
+    -- Guardar las funciones originales
+    local OriginalToggle = Components.Toggle
+    local OriginalSlider = Components.Slider
+    local OriginalKeybind = Components.Keybind
+    local OriginalDropdown = Components.Dropdown
+    local OriginalLabel = Components.Label
+    
+    -- Wrappear Toggle para agregar :AddSettings()
+    Components.Toggle = function(self, Data)
+        local Toggle, Items = OriginalToggle(self, Data)
+        
+        function Toggle:AddSettings(SettingsData, IconAssetId)
+            return SettingsMenuSystem.Create(Toggle, SettingsData, IconAssetId)
+        end
+        
+        return Toggle, Items
+    end
+    
+    -- Wrappear Slider para agregar :AddSettings()
+    Components.Slider = function(self, Data)
+        local Slider, Items = OriginalSlider(self, Data)
+        
+        function Slider:AddSettings(SettingsData, IconAssetId)
+            return SettingsMenuSystem.Create(Slider, SettingsData, IconAssetId)
+        end
+        
+        return Slider, Items
+    end
+    
+    -- Wrappear Keybind para agregar :AddSettings()
+    Components.Keybind = function(self, Data)
+        local Keybind, Items = OriginalKeybind(self, Data)
+        
+        function Keybind:AddSettings(SettingsData, IconAssetId)
+            return SettingsMenuSystem.Create(Keybind, SettingsData, IconAssetId)
+        end
+        
+        return Keybind, Items
+    end
+    
+    -- Wrappear Dropdown para agregar :AddSettings()
+    Components.Dropdown = function(self, Data)
+        local Dropdown, Items = OriginalDropdown(self, Data)
+        
+        function Dropdown:AddSettings(SettingsData, IconAssetId)
+            return SettingsMenuSystem.Create(Dropdown, SettingsData, IconAssetId)
+        end
+        
+        return Dropdown, Items
+    end
+    
+    -- Wrappear Label para agregar :AddSettings()
+    Components.Label = function(self, Data)
+        local Label, Items = OriginalLabel(self, Data)
+        
+        function Label:AddSettings(SettingsData, IconAssetId)
+            return SettingsMenuSystem.Create(Label, SettingsData, IconAssetId)
+        end
+        
+        return Label, Items
+    end
+end
+
+-- ============================================================================
+-- FIN DEL SISTEMA DE SETTINGS MENU
+-- ============================================================================
 getgenv().Library = Library
 return Library
