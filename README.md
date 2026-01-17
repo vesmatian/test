@@ -4941,7 +4941,509 @@ end
             return Dropdown, Items 
         end
     end
+-- ============================================
+-- INTEGRACIÓN COMPLETA DEL COMPONENTE SETTINGS/GEAR
+-- Copia y pega este código AL FINAL de tu librería
+-- (Justo antes del último "end" de Components)
+-- ============================================
 
+-- COMPONENTE PRINCIPAL: SETTINGS/GEAR
+Components.Settings = function(self, Data)
+    local Settings = {
+        IsOpen = false,
+        Items = {}
+    }
+
+    local Items = {} do
+        Items["SettingsButton"] = Instances:Create("TextButton", {
+            Parent = Data.Parent.Instance,
+            Name = "\0",
+            Text = "",
+            AutoButtonColor = false,
+            BackgroundTransparency = 1,
+            Size = UDim2New(0, 16, 0, 16),
+            BorderSizePixel = 0,
+            ZIndex = 3
+        })
+
+        Items["GearIcon"] = Instances:Create("ImageLabel", {
+            Parent = Items["SettingsButton"].Instance,
+            Name = "\0",
+            ImageColor3 = FromRGB(185, 185, 185),
+            ScaleType = Enum.ScaleType.Fit,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Image = "rbxassetid://106913268193226",
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 1, 0),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 3
+        })  Items["GearIcon"]:AddToTheme({ImageColor3 = "Placeholder Text"})
+
+        Items["SettingsMenu"] = Instances:Create("Frame", {
+            Parent = Library.UnusedHolder.Instance,
+            Name = "\0",
+            Visible = false,
+            BorderColor3 = FromRGB(12, 12, 12),
+            BorderSizePixel = 2,
+            Size = UDim2New(0, 220, 0, 0),
+            ZIndex = 10,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(20, 24, 21)
+        })  Items["SettingsMenu"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
+
+        Instances:Create("UIStroke", {
+            Parent = Items["SettingsMenu"].Instance,
+            Name = "\0",
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }):AddToTheme({Color = "Outline"})
+
+        Items["MenuHeader"] = Instances:Create("Frame", {
+            Parent = Items["SettingsMenu"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(42, 49, 45),
+            Size = UDim2New(1, 0, 0, 22),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(25, 30, 26),
+            ZIndex = 10
+        })  Items["MenuHeader"]:AddToTheme({BackgroundColor3 = "Page Background"})
+
+        Instances:Create("Frame", {
+            Parent = Items["MenuHeader"].Instance,
+            Name = "\0",
+            AnchorPoint = Vector2New(0, 1),
+            Position = UDim2New(0, 0, 1, 0),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 1),
+            BorderSizePixel = 0,
+            BackgroundColor3 = FromRGB(42, 49, 45),
+            ZIndex = 10
+        }):AddToTheme({BackgroundColor3 = "Outline"})
+
+        Items["HeaderText"] = Instances:Create("TextLabel", {
+            Parent = Items["MenuHeader"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = Data.Name or "Settings",
+            AnchorPoint = Vector2New(0, 0.5),
+            Size = UDim2New(1, -8, 0, 15),
+            BackgroundTransparency = 1,
+            Position = UDim2New(0, 8, 0.5, 0),
+            BorderSizePixel = 0,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextSize = 9,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 10
+        })  Items["HeaderText"]:AddToTheme({TextColor3 = "Text"})
+
+        Items["HeaderText"]:TextBorder()
+
+        Items["ContentHolder"] = Instances:Create("Frame", {
+            Parent = Items["SettingsMenu"].Instance,
+            Name = "\0",
+            Position = UDim2New(0, 0, 0, 22),
+            BorderColor3 = FromRGB(0, 0, 0),
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 0),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(255, 255, 255),
+            ZIndex = 10
+        })
+
+        Instances:Create("UIPadding", {
+            Parent = Items["ContentHolder"].Instance,
+            Name = "\0",
+            PaddingTop = UDimNew(0, 8),
+            PaddingBottom = UDimNew(0, 8),
+            PaddingRight = UDimNew(0, 8),
+            PaddingLeft = UDimNew(0, 8)
+        })
+
+        Instances:Create("UIListLayout", {
+            Parent = Items["ContentHolder"].Instance,
+            Name = "\0",
+            Padding = UDimNew(0, 8),
+            SortOrder = Enum.SortOrder.LayoutOrder
+        })
+    end
+
+    local Debounce = false
+    local RenderStepped
+
+    function Settings:SetOpen(Bool)
+        if Debounce then return end
+        Settings.IsOpen = Bool
+        Debounce = true
+
+        if Settings.IsOpen then
+            Items["SettingsMenu"].Instance.Visible = true
+            Items["SettingsMenu"].Instance.Parent = Library.Holder.Instance
+            Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+            Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
+
+            RenderStepped = RunService.RenderStepped:Connect(function()
+                local ButtonPos = Items["SettingsButton"].Instance.AbsolutePosition
+                Items["SettingsMenu"].Instance.Position = UDim2New(0, ButtonPos.X + 20, 0, ButtonPos.Y)
+            end)
+
+            for Index, Value in Library.OpenFrames do
+                if Value ~= Settings then Value:SetOpen(false) end
+            end
+            Library.OpenFrames[Settings] = Settings
+        else
+            if Library.OpenFrames[Settings] then Library.OpenFrames[Settings] = nil end
+            if RenderStepped then RenderStepped:Disconnect() RenderStepped = nil end
+            Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Placeholder Text"})
+            Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme["Placeholder Text"]})
+        end
+
+        local Descendants = Items["SettingsMenu"].Instance:GetDescendants()
+        TableInsert(Descendants, Items["SettingsMenu"].Instance)
+        local NewTween
+        for Index, Value in Descendants do
+            local TransparencyProperty = Tween:GetProperty(Value)
+            if not TransparencyProperty then continue end
+            if type(TransparencyProperty) == "table" then
+                for _, Property in TransparencyProperty do
+                    NewTween = Tween:FadeItem(Value, Property, Bool, Library.FadeSpeed)
+                end
+            else
+                NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, Library.FadeSpeed)
+            end
+        end
+
+        NewTween.Tween.Completed:Connect(function()
+            Debounce = false
+            Items["SettingsMenu"].Instance.Visible = Settings.IsOpen
+            task.wait(0.2)
+            Items["SettingsMenu"].Instance.Parent = not Settings.IsOpen and Library.UnusedHolder.Instance or Library.Holder.Instance
+        end)
+    end
+
+    function Settings:AddToggle(ToggleData)
+        local Toggle = { Value = false, Flag = ToggleData.Flag or Library:NextFlag() }
+        local ToggleItems = {}
+
+        ToggleItems["Container"] = Instances:Create("Frame", {
+            Parent = Items["ContentHolder"].Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 16),
+            ZIndex = 10
+        })
+
+        ToggleItems["Button"] = Instances:Create("TextButton", {
+            Parent = ToggleItems["Container"].Instance,
+            Text = "",
+            AutoButtonColor = false,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 1, 0),
+            ZIndex = 10
+        })
+
+        ToggleItems["Indicator"] = Instances:Create("Frame", {
+            Parent = ToggleItems["Button"].Instance,
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 0, 0.5, 0),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(0, 10, 0, 10),
+            BorderSizePixel = 1,
+            BackgroundColor3 = FromRGB(30, 36, 31),
+            ZIndex = 10
+        })  ToggleItems["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+
+        Instances:Create("UIStroke", {
+            Parent = ToggleItems["Indicator"].Instance,
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter
+        }):AddToTheme({Color = "Outline"})
+
+        ToggleItems["Check"] = Instances:Create("ImageLabel", {
+            Parent = ToggleItems["Indicator"].Instance,
+            ImageColor3 = FromRGB(0, 0, 0),
+            ImageTransparency = 1,
+            Image = "rbxassetid://108016671469439",
+            BackgroundTransparency = 1,
+            AnchorPoint = Vector2New(0.5, 0.5),
+            Position = UDim2New(0.5, 0, 0.5, 0),
+            Size = UDim2New(1, 2, 1, 2),
+            ZIndex = 10
+        })
+
+        ToggleItems["Text"] = Instances:Create("TextLabel", {
+            Parent = ToggleItems["Button"].Instance,
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            Text = ToggleData.Name,
+            Size = UDim2New(1, -20, 0, 15),
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 18, 0.5, 0),
+            BackgroundTransparency = 1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextSize = 9,
+            ZIndex = 10
+        })  ToggleItems["Text"]:AddToTheme({TextColor3 = "Text"})
+        ToggleItems["Text"]:TextBorder()
+
+        function Toggle:Set(Value)
+            Toggle.Value = Value
+            Library.Flags[Toggle.Flag] = Value
+            if Toggle.Value then
+                ToggleItems["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent"})
+                ToggleItems["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
+                task.wait(0.05)
+                ToggleItems["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0, Size = UDim2New(1, 2, 1, 2)})
+            else
+                ToggleItems["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Element"})
+                ToggleItems["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Element})
+                task.wait(0.05)
+                ToggleItems["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 1, Size = UDim2New(0, 0, 0, 0)})
+            end
+            if ToggleData.Callback then Library:SafeCall(ToggleData.Callback, Toggle.Value) end
+        end
+
+        ToggleItems["Button"]:Connect("MouseButton1Down", function() Toggle:Set(not Toggle.Value) end)
+        Toggle:Set(ToggleData.Default or false)
+        Library.SetFlags[Toggle.Flag] = function(Value) Toggle:Set(Value) end
+        TableInsert(Settings.Items, Toggle)
+        return Toggle
+    end
+
+    function Settings:AddSlider(SliderData)
+        local Slider = { Value = 0, Flag = SliderData.Flag or Library:NextFlag(), Sliding = false }
+        local SliderItems = {}
+
+        SliderItems["Container"] = Instances:Create("Frame", {
+            Parent = Items["ContentHolder"].Instance,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 24),
+            ZIndex = 10
+        })
+
+        SliderItems["Header"] = Instances:Create("Frame", {
+            Parent = SliderItems["Container"].Instance,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 12),
+            ZIndex = 10
+        })
+
+        SliderItems["Text"] = Instances:Create("TextLabel", {
+            Parent = SliderItems["Header"].Instance,
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            Text = SliderData.Name,
+            BackgroundTransparency = 1,
+            Size = UDim2New(0, 0, 0, 12),
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 9,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 10
+        })  SliderItems["Text"]:AddToTheme({TextColor3 = "Text"})
+        SliderItems["Text"]:TextBorder()
+
+        SliderItems["Value"] = Instances:Create("TextLabel", {
+            Parent = SliderItems["Header"].Instance,
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            Text = "0",
+            AnchorPoint = Vector2New(1, 0),
+            Size = UDim2New(0, 0, 0, 12),
+            BackgroundTransparency = 1,
+            Position = UDim2New(1, 0, 0, 0),
+            AutomaticSize = Enum.AutomaticSize.X,
+            TextSize = 9,
+            TextXAlignment = Enum.TextXAlignment.Right,
+            ZIndex = 10
+        })  SliderItems["Value"]:AddToTheme({TextColor3 = "Text"})
+        SliderItems["Value"]:TextBorder()
+
+        SliderItems["SliderBar"] = Instances:Create("TextButton", {
+            Parent = SliderItems["Container"].Instance,
+            AutoButtonColor = false,
+            Text = "",
+            AnchorPoint = Vector2New(0, 1),
+            Position = UDim2New(0, 0, 1, 0),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(1, 0, 0, 8),
+            BorderSizePixel = 1,
+            BackgroundColor3 = FromRGB(30, 36, 31),
+            ZIndex = 10
+        })  SliderItems["SliderBar"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+
+        Instances:Create("UIStroke", {
+            Parent = SliderItems["SliderBar"].Instance,
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter
+        }):AddToTheme({Color = "Outline"})
+
+        SliderItems["Accent"] = Instances:Create("Frame", {
+            Parent = SliderItems["SliderBar"].Instance,
+            Size = UDim2New(0.5, 0, 1, 0),
+            BackgroundColor3 = FromRGB(202, 243, 255),
+            ZIndex = 10
+        })  SliderItems["Accent"]:AddToTheme({BackgroundColor3 = "Accent"})
+
+        SliderItems["Dragger"] = Instances:Create("Frame", {
+            Parent = SliderItems["Accent"].Instance,
+            AnchorPoint = Vector2New(1, 0.5),
+            Position = UDim2New(1, 0, 0.5, 0),
+            BorderColor3 = FromRGB(42, 49, 45),
+            Size = UDim2New(0, 2, 1, 2),
+            BorderSizePixel = 1,
+            BackgroundColor3 = FromRGB(14, 17, 15),
+            ZIndex = 10
+        })  SliderItems["Dragger"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Outline"})
+
+        Instances:Create("UIStroke", {
+            Parent = SliderItems["Dragger"].Instance,
+            Color = FromRGB(12, 12, 12),
+            LineJoinMode = Enum.LineJoinMode.Miter
+        }):AddToTheme({Color = "Border"})
+
+        function Slider:Set(Value)
+            Slider.Value = Library:Round(MathClamp(Value, SliderData.Min, SliderData.Max), SliderData.Decimals or 0)
+            Library.Flags[Slider.Flag] = Slider.Value
+            SliderItems["Accent"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2New((Slider.Value - SliderData.Min) / (SliderData.Max - SliderData.Min), 0, 1, 0)})
+            SliderItems["Value"].Instance.Text = StringFormat("%s%s", tostring(Slider.Value), SliderData.Suffix or "")
+            if SliderData.Callback then Library:SafeCall(SliderData.Callback, Slider.Value) end
+        end
+
+        local InputChanged
+        SliderItems["SliderBar"]:Connect("InputBegan", function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                Slider.Sliding = true
+                local SizeX = (Mouse.X - SliderItems["SliderBar"].Instance.AbsolutePosition.X) / SliderItems["SliderBar"].Instance.AbsoluteSize.X
+                Slider:Set(((SliderData.Max - SliderData.Min) * SizeX) + SliderData.Min)
+                if InputChanged then return end
+                InputChanged = Input.Changed:Connect(function()
+                    if Input.UserInputState == Enum.UserInputState.End then
+                        Slider.Sliding = false
+                        InputChanged:Disconnect()
+                        InputChanged = nil
+                    end
+                end)
+            end
+        end)
+
+        Library:Connect(UserInputService.InputChanged, function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+                if Slider.Sliding then
+                    local SizeX = (Mouse.X - SliderItems["SliderBar"].Instance.AbsolutePosition.X) / SliderItems["SliderBar"].Instance.AbsoluteSize.X
+                    Slider:Set(((SliderData.Max - SliderData.Min) * SizeX) + SliderData.Min)
+                end
+            end
+        end)
+
+        Slider:Set(SliderData.Default or SliderData.Min)
+        Library.SetFlags[Slider.Flag] = function(Value) Slider:Set(Value) end
+        TableInsert(Settings.Items, Slider)
+        return Slider
+    end
+
+    function Settings:AddLabel(LabelData)
+        local Label = {}
+        local LabelItems = {}
+
+        LabelItems["Container"] = Instances:Create("Frame", {
+            Parent = Items["ContentHolder"].Instance,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 14),
+            ZIndex = 10
+        })
+
+        LabelItems["Text"] = Instances:Create("TextLabel", {
+            Parent = LabelItems["Container"].Instance,
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            Text = LabelData.Text or "Label",
+            Size = UDim2New(1, 0, 0, 14),
+            BackgroundTransparency = 1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextSize = 9,
+            ZIndex = 10
+        })  LabelItems["Text"]:AddToTheme({TextColor3 = "Text"})
+        LabelItems["Text"]:TextBorder()
+
+        function Label:SetText(Text) LabelItems["Text"].Instance.Text = tostring(Text) end
+        TableInsert(Settings.Items, Label)
+        return Label
+    end
+
+    function Settings:AddDivider()
+        local Divider = {}
+        local DividerItems = {}
+
+        DividerItems["Container"] = Instances:Create("Frame", {
+            Parent = Items["ContentHolder"].Instance,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 0, 1),
+            ZIndex = 10
+        })
+
+        DividerItems["Line"] = Instances:Create("Frame", {
+            Parent = DividerItems["Container"].Instance,
+            Size = UDim2New(1, 0, 1, 0),
+            BackgroundColor3 = FromRGB(42, 49, 45),
+            ZIndex = 10
+        })  DividerItems["Line"]:AddToTheme({BackgroundColor3 = "Outline"})
+
+        TableInsert(Settings.Items, Divider)
+        return Divider
+    end
+
+    Items["SettingsButton"]:Connect("MouseButton1Down", function() Settings:SetOpen(not Settings.IsOpen) end)
+
+    Items["SettingsButton"]:OnHover(function()
+        if not Settings.IsOpen then
+            Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
+            Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
+        end
+    end)
+
+    Items["SettingsButton"]:OnHoverLeave(function()
+        if not Settings.IsOpen then
+            Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Placeholder Text"})
+            Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme["Placeholder Text"]})
+        end
+    end)
+
+    Library:Connect(UserInputService.InputBegan, function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+            if not Settings.IsOpen then return end
+            if Library:IsMouseOverFrame(Items["SettingsMenu"]) or Library:IsMouseOverFrame(Items["SettingsButton"]) then return end
+            Settings:SetOpen(false)
+        end
+    end)
+
+    return Settings
+end
+
+-- INTEGRACIÓN CON TOGGLE
+-- Añade este método después del componente Toggle existente
+Components.Toggle.AddSettings = function(self, Data)
+    return Components:Settings({
+        Name = Data.Name,
+        Parent = self.Items["SubElements"]
+    })
+end
+
+-- INTEGRACIÓN CON LABEL
+-- Añade este método después del componente Label existente
+Components.Label.AddSettings = function(self, Data)
+    return Components:Settings({
+        Name = Data.Name,
+        Parent = self.Items["SubElements"]
+    })
+end
+
+-- ============================================
+-- FIN DE LA INTEGRACIÓN
+-- ============================================
     -- Library components
     Library.Watermark = function(self, Name)
         local Watermark = { }
