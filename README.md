@@ -958,7 +958,7 @@ local Library do
                 Items["Label"] = Instances:Create("TextLabel", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Text,
@@ -993,7 +993,7 @@ Components.WindowPage = function(self, Data)
         Items["Inactive"] = Instances:Create("TextButton", {
             Parent = Data.Parent.Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+            FontFace = Library.Font,
             TextColor3 = FromRGB(0, 0, 0),
             BorderColor3 = FromRGB(12, 12, 12),
             Text = "",
@@ -1045,7 +1045,7 @@ Components.WindowPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1062,7 +1062,7 @@ Components.WindowPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1303,7 +1303,7 @@ Components.WindowSubPage = function(self, Data)
         Items["Inactive"] = Instances:Create("TextButton", {
             Parent = Data.Page.Items["SubPages"].Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+            FontFace = Library.Font,
             TextColor3 = FromRGB(0, 0, 0),
             BorderColor3 = FromRGB(12, 12, 12),
             Text = "",
@@ -1346,7 +1346,7 @@ Components.WindowSubPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1363,7 +1363,7 @@ Components.WindowSubPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1579,7 +1579,7 @@ end
                 Items["Inactive"] = Instances:Create("TextButton", {
                     Parent = Data.Page.Items["SubPages"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(12, 12, 12),
                     Text = "",
@@ -1604,7 +1604,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Inactive"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -1804,7 +1804,7 @@ end
                 Items["Toggle"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "",
@@ -1863,7 +1863,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Toggle"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2010,7 +2010,7 @@ end
                     SubItems["NewButton"] = Instances:Create("TextButton", {
                         Parent = Items["Button"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                        FontFace = Library.Font,
                         TextColor3 = FromRGB(0, 0, 0),
                         BorderColor3 = FromRGB(12, 12, 12),
                         Text = "",
@@ -2041,7 +2041,7 @@ end
                     SubItems["Text"] = Instances:Create("TextLabel", {
                         Parent = SubItems["NewButton"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                        FontFace = Library.Font,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = Name,
@@ -2126,7 +2126,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2207,10 +2207,10 @@ end
                     ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 }):AddToTheme({Color = "Border"})
 
-                Items["Value"] = Instances:Create("TextBox", {
+                Items["Value"] = Instances:Create("TextLabel", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "50%",
@@ -2221,37 +2221,10 @@ end
                     BorderSizePixel = 0,
                     AutomaticSize = Enum.AutomaticSize.X,
                     TextSize = 9,
-                    TextEditable = true,
-                    ClearTextOnFocus = false,
                     BackgroundColor3 = FromRGB(255, 255, 255)
                 })  Items["Value"]:AddToTheme({TextColor3 = "Text"})
 
                 Items["Value"]:TextBorder()
-                
-                -- ✅ LÓGICA PARA ESCRIBIR VALORES
-                Items["Value"].Instance.FocusLost:Connect(function(enterPressed)
-                    local inputText = Items["Value"].Instance.Text
-                    
-                    -- Remover sufijo si existe
-                    if Data.Suffix and Data.Suffix ~= "" then
-                        inputText = inputText:gsub(Data.Suffix .. "$", "")
-                    end
-                    
-                    -- Limpiar espacios
-                    inputText = inputText:match("^%s*(.-)%s*$")
-                    
-                    -- Intentar convertir a número
-                    local inputValue = tonumber(inputText)
-                    
-                    if inputValue then
-                        -- Limitar al rango
-                        inputValue = MathClamp(inputValue, Data.Min, Data.Max)
-                        Slider:Set(inputValue)
-                    else
-                        -- Si no es número válido, resetear a 0 o valor actual
-                        Slider:Set(0)
-                    end
-                end)
             end
 
             function Slider:Get()
@@ -2363,7 +2336,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Label"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2437,7 +2410,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Dropdown"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2484,7 +2457,7 @@ end
                 Items["Value"] = Instances:Create("TextLabel", {
                     Parent = Items["RealDropdown"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "--",
@@ -2689,7 +2662,7 @@ end
                 local OptionButton = Instances:Create("TextButton", {
                     Parent = Items["OptionHolder"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Option,
@@ -2853,7 +2826,7 @@ end
                 Items["Inactive"] = Instances:Create("TextButton", {
                     Parent = Data.PageHolder.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = NewTab.Name,
@@ -2916,7 +2889,7 @@ end
             Items["Palette"] = Instances:Create("TextButton", {
                 Parent = Items["ColorpickerWindow"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(0, 0, 0),
                 BorderColor3 = FromRGB(42, 49, 45),
                 Text = "",
@@ -3039,7 +3012,7 @@ end
             Items["Alpha"] = Instances:Create("TextButton", {
                 Parent = Items["ColorpickerWindow"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(0, 0, 0),
                 BorderColor3 = FromRGB(42, 49, 45),
                 Text = "",
@@ -3121,7 +3094,7 @@ end
                 Items["ColorpickerButton"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(12, 12, 12),
                     Text = "",
@@ -3255,7 +3228,7 @@ end
                 Items["Palette"] = Instances:Create("TextButton", {
                     Parent = ColorTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(42, 49, 45),
                     Text = "",
@@ -3378,7 +3351,7 @@ end
                 Items["Alpha"] = Instances:Create("TextButton", {
                     Parent = ColorTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(42, 49, 45),
                     Text = "",
@@ -3626,7 +3599,7 @@ end
                 Items["RGBColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "RGB:",
@@ -3643,7 +3616,7 @@ end
                 Items["HEXColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "HEX:",
@@ -3660,7 +3633,7 @@ end
                 Items["HSVColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "HSV:",
@@ -4071,7 +4044,7 @@ end
                 Items["KeyButton"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     TextTransparency = 0.4000000059604645,
                     Text = "MB2",
@@ -4100,7 +4073,7 @@ end
                 Items["Toggle"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Toggle",
@@ -4125,7 +4098,7 @@ end
                 Items["Hold"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Hold",
@@ -4143,7 +4116,7 @@ end
                 Items["Always"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Always",
@@ -4494,7 +4467,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Textbox"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -4539,7 +4512,7 @@ end
                 Items["Input"] = Instances:Create("TextBox", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     PlaceholderColor3 = FromRGB(185, 185, 185),
                     PlaceholderText = Data.Placeholder,
                     TextSize = 9,
@@ -4669,7 +4642,7 @@ end
                 Items["Input"] = Instances:Create("TextBox", {
                     Parent = Items["Search"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "",
@@ -4816,7 +4789,7 @@ end
                 local OptionButton = Instances:Create("TextButton", {
                     Parent = Items["List"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                    FontFace = Library.Font,
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Option,
@@ -5007,7 +4980,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Watermark"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Name,
@@ -5069,7 +5042,7 @@ end
             Items["Title"] = Instances:Create("TextLabel", {
                 Parent = Items["KeybindList"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Keybinds",
@@ -5126,7 +5099,7 @@ end
             local NewKey = Instances:Create("TextLabel", {
                 Parent = Items["Content"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "" ..Key .." - " ..Name .. " ("..Mode..")",
@@ -5199,7 +5172,7 @@ end
             Items["Title"] = Instances:Create("TextLabel", {
                 Parent = Items["Notification"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Title,
@@ -5216,7 +5189,7 @@ end
             Items["Description"] = Instances:Create("TextLabel", {
                 Parent = Items["Notification"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 TextTransparency = 0.4000000059604645,
                 Text = Description,
@@ -5317,7 +5290,7 @@ end
             Items["Title"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Inventory",
@@ -5404,7 +5377,7 @@ end
             Items["PlayerHealth"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Health: ",
@@ -5421,7 +5394,7 @@ end
             Items["PlayerDistance"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Distance:  studs",
@@ -5813,7 +5786,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Section"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Section.Name,
@@ -6226,7 +6199,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Label"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                FontFace = Library.Font,
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = BlankElement.Name,
