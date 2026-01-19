@@ -640,7 +640,33 @@ local Library do
             Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/Monaco.ttf"
         })
 
-        Library.Font = CustomFont:Get("Monaco") or Font.fromEnum(Enum.Font.Code)
+        -- ✅ FIX DEFINITIVO: Triple fallback
+local fontSuccess, fontResult = pcall(function()
+    return CustomFont:Get("Monaco")
+end)
+
+if fontSuccess and fontResult then
+    Library.Font = fontResult
+else
+    -- Fallback 1: Intentar Font.fromEnum
+    local enumSuccess, enumResult = pcall(function()
+        return Font.fromEnum(Enum.Font.Code)
+    end)
+    
+    if enumSuccess and enumResult then
+        Library.Font = enumResult
+    else
+        -- Fallback 2: Font estático (siempre funciona)
+        Library.Font = Font.new("rbxasset://fonts/families/SourceSansPro.json")
+    end
+end
+
+-- Verificación final
+if not Library.Font then
+    error("[❌ FATAL] No se pudo cargar ninguna fuente")
+end
+
+print("[✅ Font loaded]:", Library.Font)
     end
 
     Library.Holder = Instances:Create("ScreenGui", {
