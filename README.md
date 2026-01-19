@@ -5051,8 +5051,9 @@ end
                 AnchorPoint = Vector2New(0, 0.5),
                 Position = UDim2New(0, 12, 0.5, 55),
                 BorderColor3 = FromRGB(12, 12, 12),
-                Size = UDim2New(0, 116, 0, 32),
+                Size = UDim2New(0, 180, 0, 0),  -- Altura 0, crece automáticamente
                 BorderSizePixel = 2,
+                AutomaticSize = Enum.AutomaticSize.Y,  -- ✅ Crece con contenido
                 BackgroundColor3 = FromRGB(14, 17, 15)
             })  Items["KeybindList"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
 
@@ -5066,24 +5067,7 @@ end
                 ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             }):AddToTheme({Color = "Outline"})
 
-            Items["Title"] = Instances:Create("TextLabel", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
-                TextColor3 = FromRGB(235, 235, 235),
-                BorderColor3 = FromRGB(0, 0, 0),
-                Text = "Keybinds",
-                Size = UDim2New(0, 0, 0, 20),
-                BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, -4),
-                BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.X,
-                TextSize = 9,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
-
-            Items["Title"]:TextBorder()
-
+            -- Padding del frame principal
             Instances:Create("UIPadding", {
                 Parent = Items["KeybindList"].Instance,
                 Name = "\0",
@@ -5093,22 +5077,12 @@ end
                 PaddingLeft = UDimNew(0, 8)
             })
 
-            Items["Liner"] = Instances:Create("Frame", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                Position = UDim2New(0, 0, 0, 15),
-                BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, 0, 0, 1),
-                BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(202, 243, 255)
-            })  Items["Liner"]:AddToTheme({BackgroundColor3 = "Accent"})
-
-            Items["Content"] = Instances:Create("Frame", {
+            -- Container para todo el contenido
+            Items["Container"] = Instances:Create("Frame", {
                 Parent = Items["KeybindList"].Instance,
                 Name = "\0",
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, 32),
                 Size = UDim2New(1, 0, 0, 0),
                 BorderSizePixel = 0,
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -5116,10 +5090,72 @@ end
             })
 
             Instances:Create("UIListLayout", {
+                Parent = Items["Container"].Instance,
+                Name = "\0",
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDimNew(0, 4)
+            })
+
+            -- TÍTULO
+            Items["Title"] = Instances:Create("TextLabel", {
+                Parent = Items["Container"].Instance,
+                Name = "\0",
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
+                TextColor3 = FromRGB(235, 235, 235),
+                BorderColor3 = FromRGB(0, 0, 0),
+                Text = "Keybinds",
+                Size = UDim2New(1, 0, 0, 18),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextSize = 10,
+                LayoutOrder = 1,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
+
+            Items["Title"]:TextBorder()
+
+            -- LÍNEA DIVISORA SUPERIOR
+            Items["TopDivider"] = Instances:Create("Frame", {
+                Parent = Items["Container"].Instance,
+                Name = "\0",
+                BorderColor3 = FromRGB(0, 0, 0),
+                Size = UDim2New(1, 0, 0, 1),
+                BorderSizePixel = 0,
+                LayoutOrder = 2,
+                BackgroundColor3 = FromRGB(202, 243, 255)
+            })  Items["TopDivider"]:AddToTheme({BackgroundColor3 = "Accent"})
+
+            -- CONTENT (Keybinds)
+            Items["Content"] = Instances:Create("Frame", {
+                Parent = Items["Container"].Instance,
+                Name = "\0",
+                BorderColor3 = FromRGB(0, 0, 0),
+                BackgroundTransparency = 1,
+                Size = UDim2New(1, 0, 0, 0),
+                BorderSizePixel = 0,
+                AutomaticSize = Enum.AutomaticSize.Y,
+                LayoutOrder = 3,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })
+
+            Instances:Create("UIListLayout", {
                 Parent = Items["Content"].Instance,
                 Name = "\0",
-                SortOrder = Enum.SortOrder.LayoutOrder
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDimNew(0, 2)
             })
+
+            -- LÍNEA DIVISORA INFERIOR
+            Items["BottomDivider"] = Instances:Create("Frame", {
+                Parent = Items["Container"].Instance,
+                Name = "\0",
+                BorderColor3 = FromRGB(0, 0, 0),
+                Size = UDim2New(1, 0, 0, 1),
+                BorderSizePixel = 0,
+                LayoutOrder = 4,
+                BackgroundColor3 = FromRGB(202, 243, 255)
+            })  Items["BottomDivider"]:AddToTheme({BackgroundColor3 = "Accent"})
         end
 
         function KeybindList:Add(Key, Name, Mode)
@@ -5131,9 +5167,9 @@ end
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "" ..Key .." - " ..Name .. " ("..Mode..")",
                 BackgroundTransparency = 1,
-                Size = UDim2New(0, 0, 0, 15),
+                Size = UDim2New(1, 0, 0, 15),
                 BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.X,
+                TextXAlignment = Enum.TextXAlignment.Left,
                 TextTransparency = 1,
                 Visible = false,
                 TextSize = 9,
@@ -5165,6 +5201,7 @@ end
         end
 
         return KeybindList
+    end
     end
 
     Library.Notification = function(self, Title, Description, Duration)
