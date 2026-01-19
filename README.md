@@ -1886,6 +1886,7 @@ end
             local RenderStepped
 
             function Settings:SetOpen(Bool)
+                if Settings.IsOpen == Bool then return end
                 if Debounce then return end
 
                 Settings.IsOpen = Bool
@@ -1940,12 +1941,17 @@ end
                     end
                 end
 
-                NewTween.Tween.Completed:Connect(function()
+                if NewTween then
+                    NewTween.Tween.Completed:Connect(function()
+                        Debounce = false
+                        Items["SettingsFrame"].Instance.Visible = Settings.IsOpen
+                        task.wait(0.2)
+                        Items["SettingsFrame"].Instance.Parent = not Settings.IsOpen and Library.UnusedHolder.Instance or Library.Holder.Instance
+                    end)
+                else
                     Debounce = false
                     Items["SettingsFrame"].Instance.Visible = Settings.IsOpen
-                    task.wait(0.2)
-                    Items["SettingsFrame"].Instance.Parent = not Settings.IsOpen and Library.UnusedHolder.Instance or Library.Holder.Instance
-                end)
+                end
             end
 
             function Settings:Toggle(ToggleData)
@@ -2450,7 +2456,7 @@ end
                     Name = "\0",
                     BorderColor3 = FromRGB(0, 0, 0),
                     BackgroundTransparency = 1,
-                    Position = UDim2New(0, Items["Text"].Instance.TextBounds.X + 30, 0, 0),
+                    Position = UDim2New(0, Items["Text"].Instance.TextBounds.X + 36, 0, 0),
                     Size = UDim2New(0, 0, 1, 0),
                     BorderSizePixel = 0,
                     AutomaticSize = Enum.AutomaticSize.X,
@@ -2462,7 +2468,7 @@ end
                     Name = "\0",
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     FillDirection = Enum.FillDirection.Horizontal,
-                    Padding = UDimNew(0, 6),
+                    Padding = UDimNew(0, 8),
                     SortOrder = Enum.SortOrder.LayoutOrder
                 })
             end
@@ -2938,7 +2944,7 @@ end
                     Name = "\0",
                     BorderColor3 = FromRGB(0, 0, 0),
                     BackgroundTransparency = 1,
-                    Position = UDim2New(0, Items["Text"].Instance.TextBounds.X + 8, 0, 0),
+                    Position = UDim2New(0, Items["Text"].Instance.TextBounds.X + 14, 0, 0),
                     Size = UDim2New(0, 0, 1, 0),
                     BorderSizePixel = 0,
                     AutomaticSize = Enum.AutomaticSize.X,
@@ -2950,7 +2956,7 @@ end
                     Name = "\0",
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     FillDirection = Enum.FillDirection.Horizontal,
-                    Padding = UDimNew(0, 6),
+                    Padding = UDimNew(0, 8),
                     SortOrder = Enum.SortOrder.LayoutOrder
                 })
             end
