@@ -5013,132 +5013,185 @@ end
         return Watermark
     end
 
-    Library.KeybindList = function(self)
-        local KeybindList = { }
-        Library.KeyList = KeybindList
+-- REEMPLAZA la función Library.KeybindList (línea 5016-5141) con esta versión mejorada:
 
-        local Items = { } do
-            Items["KeybindList"] = Instances:Create("Frame", {
-                Parent = Library.Holder.Instance,
-                Name = "\0",
-                AnchorPoint = Vector2New(0, 0.5),
-                Position = UDim2New(0, 12, 0.5, 55),
-                BorderColor3 = FromRGB(12, 12, 12),
-                Size = UDim2New(0, 116, 0, 32),
-                BorderSizePixel = 2,
-                BackgroundColor3 = FromRGB(14, 17, 15)
-            })  Items["KeybindList"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
+Library.KeybindList = function(self)
+    local KeybindList = { }
+    Library.KeyList = KeybindList
 
-            Items["KeybindList"]:MakeDraggable()
+    local Items = { } do
+        Items["KeybindList"] = Instances:Create("Frame", {
+            Parent = Library.Holder.Instance,
+            Name = "\0",
+            AnchorPoint = Vector2New(0, 0.5),
+            Position = UDim2New(0, 12, 0.5, 55),
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(0, 150, 0, 32), -- Más ancho (era 116)
+            BorderSizePixel = 2,
+            BackgroundColor3 = FromRGB(14, 17, 15)
+        })  Items["KeybindList"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
 
-            Instances:Create("UIStroke", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                Color = FromRGB(42, 49, 45),
-                LineJoinMode = Enum.LineJoinMode.Miter,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            }):AddToTheme({Color = "Outline"})
+        Items["KeybindList"]:MakeDraggable()
 
-            Items["Title"] = Instances:Create("TextLabel", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                FontFace = Library.Font,
-                TextColor3 = FromRGB(235, 235, 235),
-                BorderColor3 = FromRGB(0, 0, 0),
-                Text = "Keybinds",
-                Size = UDim2New(0, 0, 0, 20),
-                BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, -4),
-                BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.X,
-                TextSize = 9,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
+        -- Outline principal
+        Instances:Create("UIStroke", {
+            Parent = Items["KeybindList"].Instance,
+            Name = "\0",
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }):AddToTheme({Color = "Outline"})
 
-            Items["Title"]:TextBorder()
+        -- NUEVO: Frame interno para mejor separación visual
+        Items["InlineFrame"] = Instances:Create("Frame", {
+            Parent = Items["KeybindList"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(12, 12, 12),
+            Position = UDim2New(0, 4, 0, 18),
+            Size = UDim2New(1, -8, 1, -22),
+            BorderSizePixel = 2,
+            BackgroundColor3 = FromRGB(20, 24, 21)
+        })  Items["InlineFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
 
-            Instances:Create("UIPadding", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                PaddingTop = UDimNew(0, 8),
-                PaddingBottom = UDimNew(0, 8),
-                PaddingRight = UDimNew(0, 8),
-                PaddingLeft = UDimNew(0, 8)
-            })
+        -- NUEVO: Outline del frame interno
+        Instances:Create("UIStroke", {
+            Parent = Items["InlineFrame"].Instance,
+            Name = "\0",
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }):AddToTheme({Color = "Outline"})
 
-            Items["Liner"] = Instances:Create("Frame", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                Position = UDim2New(0, 0, 0, 15),
-                BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, 0, 0, 1),
-                BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(202, 243, 255)
-            })  Items["Liner"]:AddToTheme({BackgroundColor3 = "Accent"})
+        -- Título con mejor posicionamiento
+        Items["Title"] = Instances:Create("TextLabel", {
+            Parent = Items["KeybindList"].Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = "Keybinds",
+            Size = UDim2New(1, 0, 0, 18),
+            BackgroundTransparency = 1,
+            Position = UDim2New(0, 8, 0, 0),
+            BorderSizePixel = 0,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextSize = 9,
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
 
-            Items["Content"] = Instances:Create("Frame", {
-                Parent = Items["KeybindList"].Instance,
-                Name = "\0",
-                BorderColor3 = FromRGB(0, 0, 0),
-                BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, 32),
-                Size = UDim2New(1, 0, 0, 0),
-                BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.Y,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })
+        Items["Title"]:TextBorder()
 
-            Instances:Create("UIListLayout", {
-                Parent = Items["Content"].Instance,
-                Name = "\0",
-                SortOrder = Enum.SortOrder.LayoutOrder
-            })
-        end
+        -- Padding del frame interno
+        Instances:Create("UIPadding", {
+            Parent = Items["InlineFrame"].Instance,
+            Name = "\0",
+            PaddingTop = UDimNew(0, 6),
+            PaddingBottom = UDimNew(0, 6),
+            PaddingRight = UDimNew(0, 6),
+            PaddingLeft = UDimNew(0, 6)
+        })
 
-        function KeybindList:Add(Key, Name, Mode)
-            local NewKey = Instances:Create("TextLabel", {
-                Parent = Items["Content"].Instance,
-                Name = "\0",
-                FontFace = Library.Font,
-                TextColor3 = FromRGB(235, 235, 235),
-                BorderColor3 = FromRGB(0, 0, 0),
-                Text = "" ..Key .." - " ..Name .. " ("..Mode..")",
-                BackgroundTransparency = 1,
-                Size = UDim2New(0, 0, 0, 15),
-                BorderSizePixel = 0,
-                AutomaticSize = Enum.AutomaticSize.X,
-                TextTransparency = 1,
-                Visible = false,
-                TextSize = 9,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })  NewKey:AddToTheme({TextColor3 = "Text"})
+        -- Contenedor de keybinds dentro del InlineFrame
+        Items["Content"] = Instances:Create("Frame", {
+            Parent = Items["InlineFrame"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(0, 0, 0),
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, 0, 1, 0),
+            BorderSizePixel = 0,
+            AutomaticSize = Enum.AutomaticSize.Y,
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })
 
-            NewKey:TextBorder()
-
-            function NewKey:SetText(Key, Name, Mode)
-                NewKey.Instance.Text = "" ..Key .." - " ..Name .. " ("..Mode..")"
-            end
-
-            function NewKey:SetStatus(Bool)
-                if Bool then
-                    NewKey.Instance.Visible = true
-                    NewKey:Tween(nil, {TextTransparency = 0})
-                else
-                    NewKey:Tween(nil, {TextTransparency = 1}).Tween.Completed:Connect(function()
-                        NewKey.Instance.Visible = false
-                    end)
-                end
-            end
-
-            return NewKey
-        end
-
-        function KeybindList:SetVisibility(Bool)
-            Items["KeybindList"].Instance.Visible = Bool
-        end
-
-        return KeybindList
+        Instances:Create("UIListLayout", {
+            Parent = Items["Content"].Instance,
+            Name = "\0",
+            Padding = UDimNew(0, 2), -- Separación entre keybinds
+            SortOrder = Enum.SortOrder.LayoutOrder
+        })
     end
+
+    function KeybindList:Add(Key, Name, Mode)
+        -- NUEVO: Frame individual para cada keybind con mejor estilo
+        local KeyFrame = Instances:Create("Frame", {
+            Parent = Items["Content"].Instance,
+            Name = "\0",
+            BackgroundTransparency = 0.9,
+            BorderColor3 = FromRGB(0, 0, 0),
+            Size = UDim2New(1, 0, 0, 16),
+            BorderSizePixel = 0,
+            Visible = false,
+            BackgroundColor3 = FromRGB(30, 36, 31)
+        })  KeyFrame:AddToTheme({BackgroundColor3 = "Element"})
+
+        -- Keybind text con mejor formato
+        local NewKey = Instances:Create("TextLabel", {
+            Parent = KeyFrame.Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(235, 235, 235),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = Key .. " - " .. Name,
+            BackgroundTransparency = 1,
+            Size = UDim2New(1, -4, 1, 0),
+            Position = UDim2New(0, 4, 0, 0),
+            BorderSizePixel = 0,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextTransparency = 1,
+            TextSize = 9,
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })  NewKey:AddToTheme({TextColor3 = "Text"})
+
+        NewKey:TextBorder()
+
+        -- Badge del modo (Hold/Toggle) con color accent
+        local ModeBadge = Instances:Create("TextLabel", {
+            Parent = KeyFrame.Instance,
+            Name = "\0",
+            FontFace = Library.Font,
+            TextColor3 = FromRGB(202, 243, 255),
+            BorderColor3 = FromRGB(0, 0, 0),
+            Text = "[" .. Mode .. "]",
+            AnchorPoint = Vector2New(1, 0.5),
+            Position = UDim2New(1, -4, 0.5, 0),
+            BackgroundTransparency = 1,
+            Size = UDim2New(0, 0, 1, 0),
+            AutomaticSize = Enum.AutomaticSize.X,
+            BorderSizePixel = 0,
+            TextTransparency = 1,
+            TextSize = 8,
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })  ModeBadge:AddToTheme({TextColor3 = "Accent"})
+
+        function NewKey:SetText(Key, Name, Mode)
+            NewKey.Instance.Text = Key .. " - " .. Name
+            ModeBadge.Instance.Text = "[" .. Mode .. "]"
+        end
+
+        function NewKey:SetStatus(Bool)
+            if Bool then
+                KeyFrame.Instance.Visible = true
+                NewKey:Tween(nil, {TextTransparency = 0})
+                ModeBadge:Tween(nil, {TextTransparency = 0})
+                KeyFrame:Tween(nil, {BackgroundTransparency = 0.9})
+            else
+                NewKey:Tween(nil, {TextTransparency = 1})
+                ModeBadge:Tween(nil, {TextTransparency = 1})
+                KeyFrame:Tween(nil, {BackgroundTransparency = 1}).Tween.Completed:Connect(function()
+                    KeyFrame.Instance.Visible = false
+                end)
+            end
+        end
+
+        return NewKey
+    end
+
+    function KeybindList:SetVisibility(Bool)
+        Items["KeybindList"].Instance.Visible = Bool
+    end
+
+    return KeybindList
+end
 
     Library.Notification = function(self, Title, Description, Duration)
         local Items = { } do 
