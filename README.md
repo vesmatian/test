@@ -280,15 +280,13 @@ local Library do
             Item[Property] = Visibility and 1 or OldTransparency
 
             local NewTween = Tween:Create(Item, TweenInfo.new(Speed or Library.Tween.Time, Library.Tween.Style, Library.Tween.Direction), {
-                [Property] = Visibility and 0 or 1
+                [Property] = Visibility and OldTransparency or 1
             }, true)
 
             Library:Connect(NewTween.Tween.Completed, function()
                 if not Visibility then 
                     task.wait()
-                    Item[Property] = 1
-                else
-                    Item[Property] = 0
+                    Item[Property] = OldTransparency
                 end
             end)
 
@@ -1912,6 +1910,50 @@ end
                         end
                     end
                     Library.OpenFrames[Settings] = Settings
+                    
+                    -- ✅ FADE IN MANUAL (sin usar FadeItem global)
+                    local TweenService = game:GetService("TweenService")
+                    local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                    
+                    local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
+                    TableInsert(Descendants, Items["SettingsFrame"].Instance)
+                    
+                    local LastTween
+                    for _, obj in ipairs(Descendants) do
+                        if obj:IsA("GuiObject") then
+                            if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+                                if obj.TextTransparency < 1 then
+                                    obj.TextTransparency = 1
+                                    LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 0})
+                                    LastTween:Play()
+                                end
+                            end
+                            if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                                if obj.ImageTransparency < 1 then
+                                    obj.ImageTransparency = 1
+                                    LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 0})
+                                    LastTween:Play()
+                                end
+                            end
+                            if obj.BackgroundTransparency < 1 then
+                                local originalTrans = obj.BackgroundTransparency
+                                obj.BackgroundTransparency = 1
+                                LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = originalTrans})
+                                LastTween:Play()
+                            end
+                        elseif obj:IsA("UIStroke") then
+                            if obj.Transparency < 1 then
+                                obj.Transparency = 1
+                                LastTween = TweenService:Create(obj, TInfo, {Transparency = 0})
+                                LastTween:Play()
+                            end
+                        end
+                    end
+                    
+                    if LastTween then
+                        LastTween.Completed:Wait()
+                    end
+                    Debounce = false
                 else
                     if Library.OpenFrames[Settings] then
                         Library.OpenFrames[Settings] = nil
@@ -1924,35 +1966,40 @@ end
 
                     Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
                     Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
-                end
-
-                local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
-                TableInsert(Descendants, Items["SettingsFrame"].Instance)
-
-                local NewTween
-                for Index, Value in Descendants do
-                    local TransparencyProperty = Tween:GetProperty(Value)
-                    if not TransparencyProperty then continue end
-
-                    if type(TransparencyProperty) == "table" then
-                        for _, Property in TransparencyProperty do
-                            NewTween = Tween:FadeItem(Value, Property, Bool, Library.FadeSpeed)
+                    
+                    -- ✅ FADE OUT MANUAL
+                    local TweenService = game:GetService("TweenService")
+                    local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                    
+                    local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
+                    TableInsert(Descendants, Items["SettingsFrame"].Instance)
+                    
+                    local LastTween
+                    for _, obj in ipairs(Descendants) do
+                        if obj:IsA("GuiObject") then
+                            if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+                                LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 1})
+                                LastTween:Play()
+                            end
+                            if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                                LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 1})
+                                LastTween:Play()
+                            end
+                            LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = 1})
+                            LastTween:Play()
+                        elseif obj:IsA("UIStroke") then
+                            LastTween = TweenService:Create(obj, TInfo, {Transparency = 1})
+                            LastTween:Play()
                         end
-                    else
-                        NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, Library.FadeSpeed)
                     end
-                end
-
-                if NewTween then
-                    NewTween.Tween.Completed:Connect(function()
-                        Debounce = false
-                        Items["SettingsFrame"].Instance.Visible = Settings.IsOpen
-                        task.wait(0.2)
-                        Items["SettingsFrame"].Instance.Parent = not Settings.IsOpen and Library.UnusedHolder.Instance or Library.Holder.Instance
-                    end)
-                else
+                    
+                    if LastTween then
+                        LastTween.Completed:Wait()
+                    end
+                    
                     Debounce = false
-                    Items["SettingsFrame"].Instance.Visible = Settings.IsOpen
+                    Items["SettingsFrame"].Instance.Visible = false
+                    Items["SettingsFrame"].Instance.Parent = Library.UnusedHolder.Instance
                 end
             end
 
