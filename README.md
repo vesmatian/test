@@ -1794,6 +1794,571 @@ end
             return SubPage
         end
 
+        Components.SettingsMenu = function(self, Data)
+            local Settings = {
+                IsOpen = false,
+                Items = { }
+            }
+
+            local Items = { } do
+                Items["GearIcon"] = Instances:Create("ImageButton", {
+                    Parent = Data.Parent.Instance,
+                    Name = "\0",
+                    ImageColor3 = FromRGB(235, 235, 235),
+                    ScaleType = Enum.ScaleType.Fit,
+                    BorderColor3 = FromRGB(0, 0, 0),
+                    Image = "rbxassetid://10734950309",
+                    BackgroundTransparency = 1,
+                    Size = UDim2New(0, 14, 0, 14),
+                    BorderSizePixel = 0,
+                    AutoButtonColor = false,
+                    BackgroundColor3 = FromRGB(255, 255, 255)
+                })  Items["GearIcon"]:AddToTheme({ImageColor3 = "Text"})
+
+                Items["SettingsFrame"] = Instances:Create("Frame", {
+                    Parent = Library.UnusedHolder.Instance,
+                    Name = "\0",
+                    Visible = false,
+                    BorderColor3 = FromRGB(12, 12, 12),
+                    BorderSizePixel = 2,
+                    Size = UDim2New(0, 200, 0, 0),
+                    ZIndex = 10,
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundColor3 = FromRGB(14, 17, 15)
+                })  Items["SettingsFrame"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
+
+                Instances:Create("UIStroke", {
+                    Parent = Items["SettingsFrame"].Instance,
+                    Name = "\0",
+                    Color = FromRGB(42, 49, 45),
+                    LineJoinMode = Enum.LineJoinMode.Miter,
+                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                }):AddToTheme({Color = "Outline"})
+
+                Items["InlineFrame"] = Instances:Create("Frame", {
+                    Parent = Items["SettingsFrame"].Instance,
+                    Name = "\0",
+                    BorderColor3 = FromRGB(12, 12, 12),
+                    Position = UDim2New(0, 4, 0, 4),
+                    Size = UDim2New(1, -8, 1, -8),
+                    BorderSizePixel = 2,
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundColor3 = FromRGB(20, 24, 21)
+                })  Items["InlineFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
+
+                Instances:Create("UIStroke", {
+                    Parent = Items["InlineFrame"].Instance,
+                    Name = "\0",
+                    Color = FromRGB(42, 49, 45),
+                    LineJoinMode = Enum.LineJoinMode.Miter,
+                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                }):AddToTheme({Color = "Outline"})
+
+                Instances:Create("UIPadding", {
+                    Parent = Items["InlineFrame"].Instance,
+                    Name = "\0",
+                    PaddingTop = UDimNew(0, 6),
+                    PaddingBottom = UDimNew(0, 6),
+                    PaddingRight = UDimNew(0, 6),
+                    PaddingLeft = UDimNew(0, 6)
+                })
+
+                Items["Content"] = Instances:Create("Frame", {
+                    Parent = Items["InlineFrame"].Instance,
+                    Name = "\0",
+                    BorderColor3 = FromRGB(0, 0, 0),
+                    BackgroundTransparency = 1,
+                    Size = UDim2New(1, 0, 0, 0),
+                    BorderSizePixel = 0,
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundColor3 = FromRGB(255, 255, 255)
+                })
+
+                Instances:Create("UIListLayout", {
+                    Parent = Items["Content"].Instance,
+                    Name = "\0",
+                    Padding = UDimNew(0, 6),
+                    SortOrder = Enum.SortOrder.LayoutOrder
+                })
+            end
+
+            local Debounce = false
+            local RenderStepped
+
+            function Settings:SetOpen(Bool)
+                if Debounce then return end
+
+                Settings.IsOpen = Bool
+                Debounce = true
+
+                if Settings.IsOpen then
+                    Items["SettingsFrame"].Instance.Visible = true
+                    Items["SettingsFrame"].Instance.Parent = Library.Holder.Instance
+                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
+
+                    RenderStepped = RunService.RenderStepped:Connect(function()
+                        local IconPos = Data.Parent.Instance.AbsolutePosition
+                        local IconSize = Data.Parent.Instance.AbsoluteSize
+                        Items["SettingsFrame"].Instance.Position = UDim2New(0, IconPos.X + IconSize.X + 8, 0, IconPos.Y)
+                    end)
+
+                    for Index, Value in Library.OpenFrames do
+                        if Value ~= Settings then
+                            Value:SetOpen(false)
+                        end
+                    end
+                    Library.OpenFrames[Settings] = Settings
+                else
+                    if Library.OpenFrames[Settings] then
+                        Library.OpenFrames[Settings] = nil
+                    end
+
+                    if RenderStepped then
+                        RenderStepped:Disconnect()
+                        RenderStepped = nil
+                    end
+
+                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
+                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
+                end
+
+                local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
+                TableInsert(Descendants, Items["SettingsFrame"].Instance)
+
+                local NewTween
+                for Index, Value in Descendants do
+                    local TransparencyProperty = Tween:GetProperty(Value)
+                    if not TransparencyProperty then continue end
+
+                    if type(TransparencyProperty) == "table" then
+                        for _, Property in TransparencyProperty do
+                            NewTween = Tween:FadeItem(Value, Property, Bool, Library.FadeSpeed)
+                        end
+                    else
+                        NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, Library.FadeSpeed)
+                    end
+                end
+
+                NewTween.Tween.Completed:Connect(function()
+                    Debounce = false
+                    Items["SettingsFrame"].Instance.Visible = Settings.IsOpen
+                    task.wait(0.2)
+                    Items["SettingsFrame"].Instance.Parent = not Settings.IsOpen and Library.UnusedHolder.Instance or Library.Holder.Instance
+                end)
+            end
+
+            function Settings:Toggle(ToggleData)
+                local Toggle = {
+                    Value = false,
+                    Flag = ToggleData.Flag or Library:NextFlag()
+                }
+
+                local ToggleItems = { } do
+                    ToggleItems["Toggle"] = Instances:Create("TextButton", {
+                        Parent = Items["Content"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(0, 0, 0),
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Text = "",
+                        AutoButtonColor = false,
+                        BackgroundTransparency = 1,
+                        Size = UDim2New(1, 0, 0, 12),
+                        BorderSizePixel = 0,
+                        TextSize = 14,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })
+
+                    ToggleItems["Indicator"] = Instances:Create("Frame", {
+                        Parent = ToggleItems["Toggle"].Instance,
+                        Name = "\0",
+                        AnchorPoint = Vector2New(0, 0.5),
+                        Position = UDim2New(0, 0, 0.5, 0),
+                        BorderColor3 = FromRGB(12, 12, 12),
+                        Size = UDim2New(0, 10, 0, 10),
+                        BorderSizePixel = 2,
+                        BackgroundColor3 = FromRGB(30, 36, 31)
+                    })  ToggleItems["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+
+                    Instances:Create("UIStroke", {
+                        Parent = ToggleItems["Indicator"].Instance,
+                        Name = "\0",
+                        Color = FromRGB(42, 49, 45),
+                        LineJoinMode = Enum.LineJoinMode.Miter,
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                    }):AddToTheme({Color = "Outline"})
+
+                    Instances:Create("UIGradient", {
+                        Parent = ToggleItems["Indicator"].Instance,
+                        Name = "\0",
+                        Rotation = -165,
+                        Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(208, 208, 208))}
+                    }):AddToTheme({Color = function()
+                        return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
+                    end})
+
+                    ToggleItems["Check"] = Instances:Create("ImageLabel", {
+                        Parent = ToggleItems["Indicator"].Instance,
+                        Name = "\0",
+                        ImageColor3 = FromRGB(0, 0, 0),
+                        ScaleType = Enum.ScaleType.Fit,
+                        ImageTransparency = 1,
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        AnchorPoint = Vector2New(0.5, 0.5),
+                        Image = "rbxassetid://108016671469439",
+                        BackgroundTransparency = 1,
+                        Position = UDim2New(0.5, 0, 0.5, 0),
+                        Size = UDim2New(1, 2, 1, 2),
+                        BorderSizePixel = 0,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })
+
+                    ToggleItems["Text"] = Instances:Create("TextLabel", {
+                        Parent = ToggleItems["Toggle"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(235, 235, 235),
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Text = ToggleData.Name,
+                        Size = UDim2New(1, -18, 0, 12),
+                        AnchorPoint = Vector2New(0, 0.5),
+                        Position = UDim2New(0, 18, 0.5, 0),
+                        BackgroundTransparency = 1,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        BorderSizePixel = 0,
+                        TextSize = 8,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })  ToggleItems["Text"]:AddToTheme({TextColor3 = "Text"})
+
+                    ToggleItems["Text"]:TextBorder()
+                end
+
+                function Toggle:Set(Value)
+                    Toggle.Value = Value
+                    Library.Flags[Toggle.Flag] = Value
+
+                    if Toggle.Value then
+                        ToggleItems["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent"})
+                        ToggleItems["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Accent})
+                        task.wait(0.05)
+                        ToggleItems["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0, Size = UDim2New(1, 2, 1, 2)})
+                    else
+                        ToggleItems["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Element"})
+                        ToggleItems["Indicator"]:Tween(nil, {BackgroundColor3 = Library.Theme.Element})
+                        task.wait(0.05)
+                        ToggleItems["Check"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 1, Size = UDim2New(0, 0, 0, 0)})
+                    end
+
+                    if ToggleData.Callback then
+                        Library:SafeCall(ToggleData.Callback, Toggle.Value)
+                    end
+                end
+
+                ToggleItems["Toggle"]:Connect("MouseButton1Down", function()
+                    Toggle:Set(not Toggle.Value)
+                end)
+
+                Toggle:Set(ToggleData.Default or false)
+                Library.SetFlags[Toggle.Flag] = function(Value) Toggle:Set(Value) end
+
+                TableInsert(Settings.Items, Toggle)
+                return Toggle
+            end
+
+            function Settings:Slider(SliderData)
+                local Slider = {
+                    Value = 0,
+                    Flag = SliderData.Flag or Library:NextFlag(),
+                    Sliding = false
+                }
+
+                local SliderItems = { } do
+                    SliderItems["Slider"] = Instances:Create("Frame", {
+                        Parent = Items["Content"].Instance,
+                        Name = "\0",
+                        BackgroundTransparency = 1,
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Size = UDim2New(1, 0, 0, 22),
+                        BorderSizePixel = 0,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })
+
+                    SliderItems["Text"] = Instances:Create("TextLabel", {
+                        Parent = SliderItems["Slider"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(235, 235, 235),
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Text = SliderData.Name,
+                        BackgroundTransparency = 1,
+                        Size = UDim2New(0, 0, 0, 12),
+                        BorderSizePixel = 0,
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        TextSize = 8,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })  SliderItems["Text"]:AddToTheme({TextColor3 = "Text"})
+
+                    SliderItems["Text"]:TextBorder()
+
+                    SliderItems["RealSlider"] = Instances:Create("TextButton", {
+                        Parent = SliderItems["Slider"].Instance,
+                        AutoButtonColor = false,
+                        Text = "",
+                        Name = "\0",
+                        AnchorPoint = Vector2New(0, 1),
+                        Position = UDim2New(0, 0, 1, 0),
+                        BorderColor3 = FromRGB(12, 12, 12),
+                        Size = UDim2New(1, 0, 0, 8),
+                        BorderSizePixel = 2,
+                        BackgroundColor3 = FromRGB(30, 36, 31)
+                    })  SliderItems["RealSlider"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+
+                    Instances:Create("UIGradient", {
+                        Parent = SliderItems["RealSlider"].Instance,
+                        Name = "\0",
+                        Rotation = -165,
+                        Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(208, 208, 208))}
+                    }):AddToTheme({Color = function()
+                        return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
+                    end})
+
+                    Instances:Create("UIStroke", {
+                        Parent = SliderItems["RealSlider"].Instance,
+                        Name = "\0",
+                        Color = FromRGB(42, 49, 45),
+                        LineJoinMode = Enum.LineJoinMode.Miter,
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                    }):AddToTheme({Color = "Outline"})
+
+                    SliderItems["Accent"] = Instances:Create("Frame", {
+                        Parent = SliderItems["RealSlider"].Instance,
+                        Name = "\0",
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Size = UDim2New(0.5, 0, 1, 0),
+                        BorderSizePixel = 0,
+                        BackgroundColor3 = FromRGB(202, 243, 255)
+                    })  SliderItems["Accent"]:AddToTheme({BackgroundColor3 = "Accent"})
+
+                    Instances:Create("UIGradient", {
+                        Parent = SliderItems["Accent"].Instance,
+                        Name = "\0",
+                        Rotation = -165,
+                        Color = RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, FromRGB(208, 208, 208))}
+                    }):AddToTheme({Color = function()
+                        return RGBSequence{RGBSequenceKeypoint(0, FromRGB(255, 255, 255)), RGBSequenceKeypoint(1, Library.Theme.Gradient)}
+                    end})
+
+                    SliderItems["Dragger"] = Instances:Create("Frame", {
+                        Parent = SliderItems["Accent"].Instance,
+                        Name = "\0",
+                        AnchorPoint = Vector2New(1, 0.5),
+                        Position = UDim2New(1, 0, 0.5, 0),
+                        BorderColor3 = FromRGB(42, 49, 45),
+                        Size = UDim2New(0, 2, 1, 2),
+                        BorderSizePixel = 2,
+                        BackgroundColor3 = FromRGB(14, 17, 15)
+                    })  SliderItems["Dragger"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Outline"})
+
+                    Instances:Create("UIStroke", {
+                        Parent = SliderItems["Dragger"].Instance,
+                        Name = "\0",
+                        Color = FromRGB(12, 12, 12),
+                        LineJoinMode = Enum.LineJoinMode.Miter,
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                    }):AddToTheme({Color = "Border"})
+
+                    SliderItems["Value"] = Instances:Create("TextLabel", {
+                        Parent = SliderItems["Slider"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(235, 235, 235),
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Text = "50",
+                        AnchorPoint = Vector2New(1, 0),
+                        Size = UDim2New(0, 0, 0, 12),
+                        BackgroundTransparency = 1,
+                        Position = UDim2New(1, 0, 0, 0),
+                        BorderSizePixel = 0,
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        TextSize = 8,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })  SliderItems["Value"]:AddToTheme({TextColor3 = "Text"})
+
+                    SliderItems["Value"]:TextBorder()
+                end
+
+                function Slider:Set(Value)
+                    Slider.Value = Library:Round(MathClamp(Value, SliderData.Min, SliderData.Max), SliderData.Decimals)
+                    Library.Flags[Slider.Flag] = Slider.Value
+
+                    SliderItems["Accent"]:Tween(TweenInfo.new(Library.Tween.Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2New((Slider.Value - SliderData.Min) / (SliderData.Max - SliderData.Min), 0, 1, 0)})
+                    SliderItems["Value"].Instance.Text = StringFormat("%s%s", tostring(Slider.Value), SliderData.Suffix or "")
+
+                    if SliderData.Callback then
+                        Library:SafeCall(SliderData.Callback, Slider.Value)
+                    end
+                end
+
+                local InputChanged
+                SliderItems["RealSlider"]:Connect("InputBegan", function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                        Slider.Sliding = true
+
+                        local SizeX = (Mouse.X - SliderItems["RealSlider"].Instance.AbsolutePosition.X) / SliderItems["RealSlider"].Instance.AbsoluteSize.X
+                        local Value = ((SliderData.Max - SliderData.Min) * SizeX) + SliderData.Min
+                        Slider:Set(Value)
+
+                        if InputChanged then return end
+                        InputChanged = Input.Changed:Connect(function()
+                            if Input.UserInputState == Enum.UserInputState.End then
+                                Slider.Sliding = false
+                                InputChanged:Disconnect()
+                                InputChanged = nil
+                            end
+                        end)
+                    end
+                end)
+
+                Library:Connect(UserInputService.InputChanged, function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+                        if Slider.Sliding then
+                            local SizeX = (Mouse.X - SliderItems["RealSlider"].Instance.AbsolutePosition.X) / SliderItems["RealSlider"].Instance.AbsoluteSize.X
+                            local Value = ((SliderData.Max - SliderData.Min) * SizeX) + SliderData.Min
+                            Slider:Set(Value)
+                        end
+                    end
+                end)
+
+                Slider:Set(SliderData.Default or SliderData.Min)
+                Library.SetFlags[Slider.Flag] = function(Value) Slider:Set(Value) end
+
+                TableInsert(Settings.Items, Slider)
+                return Slider
+            end
+
+            function Settings:Keybind(KeybindData)
+                local Keybind = {
+                    Key = KeybindData.Default,
+                    Mode = KeybindData.Mode or "Toggle",
+                    Flag = KeybindData.Flag or Library:NextFlag()
+                }
+
+                local KeybindItems = { } do
+                    KeybindItems["Keybind"] = Instances:Create("Frame", {
+                        Parent = Items["Content"].Instance,
+                        Name = "\0",
+                        BackgroundTransparency = 1,
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Size = UDim2New(1, 0, 0, 12),
+                        BorderSizePixel = 0,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })
+
+                    KeybindItems["Text"] = Instances:Create("TextLabel", {
+                        Parent = KeybindItems["Keybind"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(235, 235, 235),
+                        BorderColor3 = FromRGB(0, 0, 0),
+                        Text = KeybindData.Name,
+                        BackgroundTransparency = 1,
+                        Size = UDim2New(0, 0, 0, 12),
+                        AnchorPoint = Vector2New(0, 0.5),
+                        Position = UDim2New(0, 0, 0.5, 0),
+                        BorderSizePixel = 0,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        TextSize = 8,
+                        BackgroundColor3 = FromRGB(255, 255, 255)
+                    })  KeybindItems["Text"]:AddToTheme({TextColor3 = "Text"})
+
+                    KeybindItems["Text"]:TextBorder()
+
+                    KeybindItems["KeyDisplay"] = Instances:Create("TextButton", {
+                        Parent = KeybindItems["Keybind"].Instance,
+                        Name = "\0",
+                        FontFace = Library.Font,
+                        TextColor3 = FromRGB(235, 235, 235),
+                        BorderColor3 = FromRGB(12, 12, 12),
+                        Text = tostring(Keybind.Key):gsub("Enum.KeyCode.", ""),
+                        AutoButtonColor = false,
+                        AnchorPoint = Vector2New(1, 0.5),
+                        Size = UDim2New(0, 0, 0, 12),
+                        Position = UDim2New(1, 0, 0.5, 0),
+                        BorderSizePixel = 2,
+                        AutomaticSize = Enum.AutomaticSize.X,
+                        TextSize = 8,
+                        BackgroundColor3 = FromRGB(30, 36, 31)
+                    })  KeybindItems["KeyDisplay"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border", TextColor3 = "Text"})
+
+                    Instances:Create("UIStroke", {
+                        Parent = KeybindItems["KeyDisplay"].Instance,
+                        Name = "\0",
+                        Color = FromRGB(42, 49, 45),
+                        LineJoinMode = Enum.LineJoinMode.Miter,
+                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                    }):AddToTheme({Color = "Outline"})
+
+                    Instances:Create("UIPadding", {
+                        Parent = KeybindItems["KeyDisplay"].Instance,
+                        Name = "\0",
+                        PaddingRight = UDimNew(0, 3),
+                        PaddingLeft = UDimNew(0, 3)
+                    })
+                end
+
+                function Keybind:Set(NewKey)
+                    Keybind.Key = NewKey
+                    Library.Flags[Keybind.Flag] = {Key = NewKey, Mode = Keybind.Mode}
+
+                    local DisplayKey = tostring(NewKey):gsub("Enum.KeyCode.", "")
+                    DisplayKey = Keys[DisplayKey] or DisplayKey
+                    KeybindItems["KeyDisplay"].Instance.Text = DisplayKey
+
+                    if KeybindData.Callback then
+                        Library:SafeCall(KeybindData.Callback, {Key = NewKey, Mode = Keybind.Mode})
+                    end
+                end
+
+                Keybind:Set(KeybindData.Default or Enum.KeyCode.Unknown)
+                Library.SetFlags[Keybind.Flag] = function(Value) Keybind:Set(Value.Key) end
+
+                TableInsert(Settings.Items, Keybind)
+                return Keybind
+            end
+
+            Items["GearIcon"]:Connect("MouseButton1Down", function()
+                Settings:SetOpen(not Settings.IsOpen)
+            end)
+
+            Items["GearIcon"]:OnHover(function()
+                if not Settings.IsOpen then
+                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
+                end
+            end)
+
+            Items["GearIcon"]:OnHoverLeave(function()
+                if not Settings.IsOpen then
+                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
+                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
+                end
+            end)
+
+            Library:Connect(UserInputService.InputBegan, function(Input)
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+                    if not Settings.IsOpen then return end
+                    if Library:IsMouseOverFrame(Items["SettingsFrame"]) then return end
+                    if Library:IsMouseOverFrame(Items["GearIcon"]) then return end
+
+                    Settings:SetOpen(false)
+                end
+            end)
+
+            return Settings, Items
+        end
+
         Components.Toggle = function(self, Data)
             local Toggle = {
                 Value = false,
@@ -1974,6 +2539,13 @@ end
             Library.SetFlags[Toggle.Flag] = function(Value)
                 Toggle:Set(Value)
             end
+
+            function Toggle:Settings()
+                return Components:SettingsMenu({
+                    Parent = Items["SubElements"]
+                })
+            end
+
 
             return Toggle, Items
         end
@@ -2316,6 +2888,14 @@ end
                 Slider:Set(Value)
             end
 
+
+            function Slider:Settings()
+                return Components:SettingsMenu({
+                    Parent = Items["Slider"]
+                })
+            end
+
+
             return Slider, Items
         end
 
@@ -2384,6 +2964,14 @@ end
             function Label:SetVisibility(Bool)
                 Items["Label"].Instance.Visible = Bool
             end
+
+
+            function Label:Settings()
+                return Components:SettingsMenu({
+                    Parent = Items["SubElements"]
+                })
+            end
+
 
             return Label, Items 
         end
@@ -2808,6 +3396,14 @@ end
             Library.SetFlags[Dropdown.Flag] = function(Value)
                 Dropdown:Set(Value)
             end
+
+
+            function Dropdown:Settings()
+                return Components:SettingsMenu({
+                    Parent = Items["Dropdown"]
+                })
+            end
+
 
             return Dropdown, Items 
         end
@@ -5013,7 +5609,9 @@ end
         return Watermark
     end
 
--- REEMPLAZA la función Library.KeybindList (línea 5016-5141) con esta versión mejorada:
+-- ════════════════════════════════════════════════════════════════
+-- PARTE 1: FIX DEL KEYBINDLIST (línea 5016)
+-- ════════════════════════════════════════════════════════════════
 
 Library.KeybindList = function(self)
     local KeybindList = { }
@@ -5026,14 +5624,13 @@ Library.KeybindList = function(self)
             AnchorPoint = Vector2New(0, 0.5),
             Position = UDim2New(0, 12, 0.5, 55),
             BorderColor3 = FromRGB(12, 12, 12),
-            Size = UDim2New(0, 150, 0, 32), -- Más ancho (era 116)
+            Size = UDim2New(0, 180, 0, 32), -- AUMENTADO: 150 → 180
             BorderSizePixel = 2,
             BackgroundColor3 = FromRGB(14, 17, 15)
         })  Items["KeybindList"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
 
         Items["KeybindList"]:MakeDraggable()
 
-        -- Outline principal
         Instances:Create("UIStroke", {
             Parent = Items["KeybindList"].Instance,
             Name = "\0",
@@ -5042,7 +5639,6 @@ Library.KeybindList = function(self)
             ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         }):AddToTheme({Color = "Outline"})
 
-        -- NUEVO: Frame interno para mejor separación visual
         Items["InlineFrame"] = Instances:Create("Frame", {
             Parent = Items["KeybindList"].Instance,
             Name = "\0",
@@ -5053,7 +5649,6 @@ Library.KeybindList = function(self)
             BackgroundColor3 = FromRGB(20, 24, 21)
         })  Items["InlineFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
 
-        -- NUEVO: Outline del frame interno
         Instances:Create("UIStroke", {
             Parent = Items["InlineFrame"].Instance,
             Name = "\0",
@@ -5062,7 +5657,6 @@ Library.KeybindList = function(self)
             ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         }):AddToTheme({Color = "Outline"})
 
-        -- Título con mejor posicionamiento
         Items["Title"] = Instances:Create("TextLabel", {
             Parent = Items["KeybindList"].Instance,
             Name = "\0",
@@ -5081,17 +5675,15 @@ Library.KeybindList = function(self)
 
         Items["Title"]:TextBorder()
 
-        -- Padding del frame interno
         Instances:Create("UIPadding", {
             Parent = Items["InlineFrame"].Instance,
             Name = "\0",
-            PaddingTop = UDimNew(0, 6),
-            PaddingBottom = UDimNew(0, 6),
-            PaddingRight = UDimNew(0, 6),
-            PaddingLeft = UDimNew(0, 6)
+            PaddingTop = UDimNew(0, 4),
+            PaddingBottom = UDimNew(0, 4),
+            PaddingRight = UDimNew(0, 4),
+            PaddingLeft = UDimNew(0, 4)
         })
 
-        -- Contenedor de keybinds dentro del InlineFrame
         Items["Content"] = Instances:Create("Frame", {
             Parent = Items["InlineFrame"].Instance,
             Name = "\0",
@@ -5106,13 +5698,12 @@ Library.KeybindList = function(self)
         Instances:Create("UIListLayout", {
             Parent = Items["Content"].Instance,
             Name = "\0",
-            Padding = UDimNew(0, 2), -- Separación entre keybinds
+            Padding = UDimNew(0, 2),
             SortOrder = Enum.SortOrder.LayoutOrder
         })
     end
 
     function KeybindList:Add(Key, Name, Mode)
-        -- NUEVO: Frame individual para cada keybind con mejor estilo
         local KeyFrame = Instances:Create("Frame", {
             Parent = Items["Content"].Instance,
             Name = "\0",
@@ -5124,7 +5715,7 @@ Library.KeybindList = function(self)
             BackgroundColor3 = FromRGB(30, 36, 31)
         })  KeyFrame:AddToTheme({BackgroundColor3 = "Element"})
 
-        -- Keybind text con mejor formato
+        -- FIX: TextScaled para evitar cortes
         local NewKey = Instances:Create("TextLabel", {
             Parent = KeyFrame.Instance,
             Name = "\0",
@@ -5133,30 +5724,29 @@ Library.KeybindList = function(self)
             BorderColor3 = FromRGB(0, 0, 0),
             Text = Key .. " - " .. Name,
             BackgroundTransparency = 1,
-            Size = UDim2New(1, -4, 1, 0),
+            Size = UDim2New(1, -50, 1, 0), -- AJUSTADO: más espacio para el badge
             Position = UDim2New(0, 4, 0, 0),
             BorderSizePixel = 0,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTransparency = 1,
             TextSize = 9,
+            TextTruncate = Enum.TextTruncate.AtEnd, -- NUEVO: truncar con ...
             BackgroundColor3 = FromRGB(255, 255, 255)
         })  NewKey:AddToTheme({TextColor3 = "Text"})
 
         NewKey:TextBorder()
 
-        -- Badge del modo (Hold/Toggle) con color accent
         local ModeBadge = Instances:Create("TextLabel", {
             Parent = KeyFrame.Instance,
             Name = "\0",
             FontFace = Library.Font,
             TextColor3 = FromRGB(202, 243, 255),
             BorderColor3 = FromRGB(0, 0, 0),
-            Text = "[" .. Mode .. "]",
+            Text = Mode:sub(1, 3), -- FIX: Solo primeras 3 letras (Tog/Hol)
             AnchorPoint = Vector2New(1, 0.5),
             Position = UDim2New(1, -4, 0.5, 0),
             BackgroundTransparency = 1,
-            Size = UDim2New(0, 0, 1, 0),
-            AutomaticSize = Enum.AutomaticSize.X,
+            Size = UDim2New(0, 30, 1, 0), -- FIJO: ancho fijo
             BorderSizePixel = 0,
             TextTransparency = 1,
             TextSize = 8,
@@ -5165,7 +5755,7 @@ Library.KeybindList = function(self)
 
         function NewKey:SetText(Key, Name, Mode)
             NewKey.Instance.Text = Key .. " - " .. Name
-            ModeBadge.Instance.Text = "[" .. Mode .. "]"
+            ModeBadge.Instance.Text = Mode:sub(1, 3)
         end
 
         function NewKey:SetStatus(Bool)
@@ -5192,6 +5782,12 @@ Library.KeybindList = function(self)
 
     return KeybindList
 end
+
+
+-- ════════════════════════════════════════════════════════════════
+-- PARTE 2: NUEVA FUNCIONALIDAD - SETTINGS MENU
+-- ════════════════════════════════════════════════════════════════
+-- Agregar esto ANTES de "Components.Toggle = function..."
 
     Library.Notification = function(self, Title, Description, Duration)
         local Items = { } do 
