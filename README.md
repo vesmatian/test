@@ -5630,8 +5630,9 @@ Library.KeybindList = function(self)
             AnchorPoint = Vector2New(0, 0.5),
             Position = UDim2New(0, 12, 0.5, 55),
             BorderColor3 = FromRGB(12, 12, 12),
-            Size = UDim2New(0, 180, 0, 32), -- AUMENTADO: 150 → 180
+            Size = UDim2New(0, 180, 0, 0),  -- ✅ FIXED: Altura 0, crece automáticamente
             BorderSizePixel = 2,
+            AutomaticSize = Enum.AutomaticSize.Y,  -- ✅ NUEVO: Crece con el contenido
             BackgroundColor3 = FromRGB(14, 17, 15)
         })  Items["KeybindList"]:AddToTheme({BackgroundColor3 = "Background", BorderColor3 = "Border"})
 
@@ -5639,24 +5640,6 @@ Library.KeybindList = function(self)
 
         Instances:Create("UIStroke", {
             Parent = Items["KeybindList"].Instance,
-            Name = "\0",
-            Color = FromRGB(42, 49, 45),
-            LineJoinMode = Enum.LineJoinMode.Miter,
-            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        }):AddToTheme({Color = "Outline"})
-
-        Items["InlineFrame"] = Instances:Create("Frame", {
-            Parent = Items["KeybindList"].Instance,
-            Name = "\0",
-            BorderColor3 = FromRGB(12, 12, 12),
-            Position = UDim2New(0, 4, 0, 18),
-            Size = UDim2New(1, -8, 1, -22),
-            BorderSizePixel = 2,
-            BackgroundColor3 = FromRGB(20, 24, 21)
-        })  Items["InlineFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
-
-        Instances:Create("UIStroke", {
-            Parent = Items["InlineFrame"].Instance,
             Name = "\0",
             Color = FromRGB(42, 49, 45),
             LineJoinMode = Enum.LineJoinMode.Miter,
@@ -5681,6 +5664,34 @@ Library.KeybindList = function(self)
 
         Items["Title"]:TextBorder()
 
+        -- ✅ NUEVO: Padding para el KeybindList principal
+        Instances:Create("UIPadding", {
+            Parent = Items["KeybindList"].Instance,
+            Name = "\0",
+            PaddingTop = UDimNew(0, 22),  -- Espacio para el título
+            PaddingBottom = UDimNew(0, 8),
+            PaddingRight = UDimNew(0, 8),
+            PaddingLeft = UDimNew(0, 8)
+        })
+
+        Items["InlineFrame"] = Instances:Create("Frame", {
+            Parent = Items["KeybindList"].Instance,
+            Name = "\0",
+            BorderColor3 = FromRGB(12, 12, 12),
+            Size = UDim2New(1, 0, 0, 0),  -- ✅ FIXED: Altura 0
+            BorderSizePixel = 2,
+            AutomaticSize = Enum.AutomaticSize.Y,  -- ✅ NUEVO: Crece automáticamente
+            BackgroundColor3 = FromRGB(20, 24, 21)
+        })  Items["InlineFrame"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Border"})
+
+        Instances:Create("UIStroke", {
+            Parent = Items["InlineFrame"].Instance,
+            Name = "\0",
+            Color = FromRGB(42, 49, 45),
+            LineJoinMode = Enum.LineJoinMode.Miter,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        }):AddToTheme({Color = "Outline"})
+
         Instances:Create("UIPadding", {
             Parent = Items["InlineFrame"].Instance,
             Name = "\0",
@@ -5695,9 +5706,9 @@ Library.KeybindList = function(self)
             Name = "\0",
             BorderColor3 = FromRGB(0, 0, 0),
             BackgroundTransparency = 1,
-            Size = UDim2New(1, 0, 1, 0),
+            Size = UDim2New(1, 0, 0, 0),  -- ✅ FIXED: Altura 0
             BorderSizePixel = 0,
-            AutomaticSize = Enum.AutomaticSize.Y,
+            AutomaticSize = Enum.AutomaticSize.Y,  -- Ya estaba
             BackgroundColor3 = FromRGB(255, 255, 255)
         })
 
@@ -5721,7 +5732,6 @@ Library.KeybindList = function(self)
             BackgroundColor3 = FromRGB(30, 36, 31)
         })  KeyFrame:AddToTheme({BackgroundColor3 = "Element"})
 
-        -- FIX: TextScaled para evitar cortes
         local NewKey = Instances:Create("TextLabel", {
             Parent = KeyFrame.Instance,
             Name = "\0",
@@ -5730,13 +5740,13 @@ Library.KeybindList = function(self)
             BorderColor3 = FromRGB(0, 0, 0),
             Text = Key .. " - " .. Name,
             BackgroundTransparency = 1,
-            Size = UDim2New(1, -50, 1, 0), -- AJUSTADO: más espacio para el badge
+            Size = UDim2New(1, -50, 1, 0),
             Position = UDim2New(0, 4, 0, 0),
             BorderSizePixel = 0,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTransparency = 1,
             TextSize = 9,
-            TextTruncate = Enum.TextTruncate.AtEnd, -- NUEVO: truncar con ...
+            TextTruncate = Enum.TextTruncate.AtEnd,
             BackgroundColor3 = FromRGB(255, 255, 255)
         })  NewKey:AddToTheme({TextColor3 = "Text"})
 
@@ -5748,11 +5758,11 @@ Library.KeybindList = function(self)
             FontFace = Library.Font,
             TextColor3 = FromRGB(202, 243, 255),
             BorderColor3 = FromRGB(0, 0, 0),
-            Text = Mode:sub(1, 3), -- FIX: Solo primeras 3 letras (Tog/Hol)
+            Text = Mode:sub(1, 3),
             AnchorPoint = Vector2New(1, 0.5),
             Position = UDim2New(1, -4, 0.5, 0),
             BackgroundTransparency = 1,
-            Size = UDim2New(0, 30, 1, 0), -- FIJO: ancho fijo
+            Size = UDim2New(0, 30, 1, 0),
             BorderSizePixel = 0,
             TextTransparency = 1,
             TextSize = 8,
