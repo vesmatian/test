@@ -958,7 +958,7 @@ local Library do
                 Items["Label"] = Instances:Create("TextLabel", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Text,
@@ -993,7 +993,7 @@ Components.WindowPage = function(self, Data)
         Items["Inactive"] = Instances:Create("TextButton", {
             Parent = Data.Parent.Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
             TextColor3 = FromRGB(0, 0, 0),
             BorderColor3 = FromRGB(12, 12, 12),
             Text = "",
@@ -1045,7 +1045,7 @@ Components.WindowPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1062,7 +1062,7 @@ Components.WindowPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1303,7 +1303,7 @@ Components.WindowSubPage = function(self, Data)
         Items["Inactive"] = Instances:Create("TextButton", {
             Parent = Data.Page.Items["SubPages"].Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
             TextColor3 = FromRGB(0, 0, 0),
             BorderColor3 = FromRGB(12, 12, 12),
             Text = "",
@@ -1346,7 +1346,7 @@ Components.WindowSubPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1363,7 +1363,7 @@ Components.WindowSubPage = function(self, Data)
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Data.Name,
@@ -1579,7 +1579,7 @@ end
                 Items["Inactive"] = Instances:Create("TextButton", {
                     Parent = Data.Page.Items["SubPages"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(12, 12, 12),
                     Text = "",
@@ -1604,7 +1604,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Inactive"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -1795,6 +1795,9 @@ end
         end
 
         Components.SettingsMenu = function(self, Data)
+            -- ✅ Font seguro para Settings
+            local SettingsFont = Library.Font or Font.fromEnum(Enum.Font.SourceSans)
+            
             local Settings = {
                 IsOpen = false,
                 Items = { }
@@ -1892,115 +1895,124 @@ end
                 Settings.IsOpen = Bool
                 Debounce = true
 
-                if Settings.IsOpen then
-                    Items["SettingsFrame"].Instance.Visible = true
-                    Items["SettingsFrame"].Instance.Parent = Library.Holder.Instance
-                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Accent"})
-                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
+                local success = pcall(function()
+                    if Settings.IsOpen then
+                        Items["SettingsFrame"].Instance.Visible = true
+                        Items["SettingsFrame"].Instance.Parent = Library.Holder.Instance
+                        Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Accent"})
+                        Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
 
-                    RenderStepped = RunService.RenderStepped:Connect(function()
-                        local IconPos = Data.Parent.Instance.AbsolutePosition
-                        local IconSize = Data.Parent.Instance.AbsoluteSize
-                        Items["SettingsFrame"].Instance.Position = UDim2New(0, IconPos.X + IconSize.X + 8, 0, IconPos.Y)
-                    end)
+                        RenderStepped = RunService.RenderStepped:Connect(function()
+                            local IconPos = Data.Parent.Instance.AbsolutePosition
+                            local IconSize = Data.Parent.Instance.AbsoluteSize
+                            Items["SettingsFrame"].Instance.Position = UDim2New(0, IconPos.X + IconSize.X + 8, 0, IconPos.Y)
+                        end)
 
-                    for Index, Value in Library.OpenFrames do
-                        if Value ~= Settings then
-                            Value:SetOpen(false)
+                        for Index, Value in Library.OpenFrames do
+                            if Value ~= Settings then
+                                Value:SetOpen(false)
+                            end
                         end
-                    end
-                    Library.OpenFrames[Settings] = Settings
-                    
-                    -- ✅ FADE IN MANUAL (sin usar FadeItem global)
-                    local TweenService = game:GetService("TweenService")
-                    local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                    
-                    local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
-                    TableInsert(Descendants, Items["SettingsFrame"].Instance)
-                    
-                    local LastTween
-                    for _, obj in ipairs(Descendants) do
-                        if obj:IsA("GuiObject") then
-                            if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-                                if obj.TextTransparency < 1 then
-                                    obj.TextTransparency = 1
-                                    LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 0})
+                        Library.OpenFrames[Settings] = Settings
+                        
+                        -- ✅ FADE IN MANUAL (sin usar FadeItem global)
+                        local TweenService = game:GetService("TweenService")
+                        local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                        
+                        local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
+                        TableInsert(Descendants, Items["SettingsFrame"].Instance)
+                        
+                        local LastTween
+                        for _, obj in ipairs(Descendants) do
+                            if obj:IsA("GuiObject") then
+                                if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+                                    if obj.TextTransparency < 1 then
+                                        obj.TextTransparency = 1
+                                        LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 0})
+                                        LastTween:Play()
+                                    end
+                                end
+                                if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                                    if obj.ImageTransparency < 1 then
+                                        obj.ImageTransparency = 1
+                                        LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 0})
+                                        LastTween:Play()
+                                    end
+                                end
+                                if obj.BackgroundTransparency < 1 then
+                                    local originalTrans = obj.BackgroundTransparency
+                                    obj.BackgroundTransparency = 1
+                                    LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = originalTrans})
+                                    LastTween:Play()
+                                end
+                            elseif obj:IsA("UIStroke") then
+                                if obj.Transparency < 1 then
+                                    obj.Transparency = 1
+                                    LastTween = TweenService:Create(obj, TInfo, {Transparency = 0})
                                     LastTween:Play()
                                 end
                             end
-                            if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-                                if obj.ImageTransparency < 1 then
-                                    obj.ImageTransparency = 1
-                                    LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 0})
+                        end
+                        
+                        if LastTween then
+                            LastTween.Completed:Wait()
+                        end
+                    else
+                        if Library.OpenFrames[Settings] then
+                            Library.OpenFrames[Settings] = nil
+                        end
+
+                        if RenderStepped then
+                            RenderStepped:Disconnect()
+                            RenderStepped = nil
+                        end
+
+                        Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
+                        Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
+                        
+                        -- ✅ FADE OUT MANUAL
+                        local TweenService = game:GetService("TweenService")
+                        local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                        
+                        local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
+                        TableInsert(Descendants, Items["SettingsFrame"].Instance)
+                        
+                        local LastTween
+                        for _, obj in ipairs(Descendants) do
+                            if obj:IsA("GuiObject") then
+                                if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+                                    LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 1})
                                     LastTween:Play()
                                 end
-                            end
-                            if obj.BackgroundTransparency < 1 then
-                                local originalTrans = obj.BackgroundTransparency
-                                obj.BackgroundTransparency = 1
-                                LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = originalTrans})
+                                if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+                                    LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 1})
+                                    LastTween:Play()
+                                end
+                                LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = 1})
                                 LastTween:Play()
-                            end
-                        elseif obj:IsA("UIStroke") then
-                            if obj.Transparency < 1 then
-                                obj.Transparency = 1
-                                LastTween = TweenService:Create(obj, TInfo, {Transparency = 0})
+                            elseif obj:IsA("UIStroke") then
+                                LastTween = TweenService:Create(obj, TInfo, {Transparency = 1})
                                 LastTween:Play()
                             end
                         end
-                    end
-                    
-                    if LastTween then
-                        LastTween.Completed:Wait()
-                    end
-                    Debounce = false
-                else
-                    if Library.OpenFrames[Settings] then
-                        Library.OpenFrames[Settings] = nil
-                    end
-
-                    if RenderStepped then
-                        RenderStepped:Disconnect()
-                        RenderStepped = nil
-                    end
-
-                    Items["GearIcon"]:ChangeItemTheme({ImageColor3 = "Text"})
-                    Items["GearIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Text})
-                    
-                    -- ✅ FADE OUT MANUAL
-                    local TweenService = game:GetService("TweenService")
-                    local TInfo = TweenInfo.new(Library.FadeSpeed or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                    
-                    local Descendants = Items["SettingsFrame"].Instance:GetDescendants()
-                    TableInsert(Descendants, Items["SettingsFrame"].Instance)
-                    
-                    local LastTween
-                    for _, obj in ipairs(Descendants) do
-                        if obj:IsA("GuiObject") then
-                            if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-                                LastTween = TweenService:Create(obj, TInfo, {TextTransparency = 1})
-                                LastTween:Play()
-                            end
-                            if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-                                LastTween = TweenService:Create(obj, TInfo, {ImageTransparency = 1})
-                                LastTween:Play()
-                            end
-                            LastTween = TweenService:Create(obj, TInfo, {BackgroundTransparency = 1})
-                            LastTween:Play()
-                        elseif obj:IsA("UIStroke") then
-                            LastTween = TweenService:Create(obj, TInfo, {Transparency = 1})
-                            LastTween:Play()
+                        
+                        if LastTween then
+                            LastTween.Completed:Wait()
                         end
+                        
+                        Items["SettingsFrame"].Instance.Visible = false
+                        Items["SettingsFrame"].Instance.Parent = Library.UnusedHolder.Instance
                     end
-                    
-                    if LastTween then
-                        LastTween.Completed:Wait()
-                    end
-                    
-                    Debounce = false
-                    Items["SettingsFrame"].Instance.Visible = false
-                    Items["SettingsFrame"].Instance.Parent = Library.UnusedHolder.Instance
+                end)
+                
+                -- ✅ SIEMPRE resetear Debounce
+                Debounce = false
+                
+                if not success then
+                    warn("Settings:SetOpen error - resetting state")
+                    Settings.IsOpen = not Bool
                 end
+            end
             end
 
             function Settings:Toggle(ToggleData)
@@ -2013,7 +2025,7 @@ end
                     ToggleItems["Toggle"] = Instances:Create("TextButton", {
                         Parent = Items["Content"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(0, 0, 0),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = "",
@@ -2072,7 +2084,7 @@ end
                     ToggleItems["Text"] = Instances:Create("TextLabel", {
                         Parent = ToggleItems["Toggle"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = ToggleData.Name,
@@ -2142,7 +2154,7 @@ end
                     SliderItems["Text"] = Instances:Create("TextLabel", {
                         Parent = SliderItems["Slider"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = SliderData.Name,
@@ -2226,7 +2238,7 @@ end
                     SliderItems["Value"] = Instances:Create("TextLabel", {
                         Parent = SliderItems["Slider"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = "50",
@@ -2313,7 +2325,7 @@ end
                     KeybindItems["Text"] = Instances:Create("TextLabel", {
                         Parent = KeybindItems["Keybind"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = KeybindData.Name,
@@ -2333,7 +2345,7 @@ end
                     KeybindItems["KeyDisplay"] = Instances:Create("TextButton", {
                         Parent = KeybindItems["Keybind"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = SettingsFont,
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(12, 12, 12),
                         Text = tostring(Keybind.Key):gsub("Enum.KeyCode.", ""),
@@ -2424,7 +2436,7 @@ end
                 Items["Toggle"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = SettingsFont,
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "",
@@ -2483,7 +2495,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Toggle"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2637,7 +2649,7 @@ end
                     SubItems["NewButton"] = Instances:Create("TextButton", {
                         Parent = Items["Button"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                         TextColor3 = FromRGB(0, 0, 0),
                         BorderColor3 = FromRGB(12, 12, 12),
                         Text = "",
@@ -2668,7 +2680,7 @@ end
                     SubItems["Text"] = Instances:Create("TextLabel", {
                         Parent = SubItems["NewButton"].Instance,
                         Name = "\0",
-                        FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                        FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                         TextColor3 = FromRGB(235, 235, 235),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Text = Name,
@@ -2753,7 +2765,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -2837,7 +2849,7 @@ end
                 Items["Value"] = Instances:Create("TextLabel", {
                     Parent = Items["Slider"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "50%",
@@ -2971,7 +2983,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Label"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -3053,7 +3065,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Dropdown"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -3100,7 +3112,7 @@ end
                 Items["Value"] = Instances:Create("TextLabel", {
                     Parent = Items["RealDropdown"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "--",
@@ -3305,7 +3317,7 @@ end
                 local OptionButton = Instances:Create("TextButton", {
                     Parent = Items["OptionHolder"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Option,
@@ -3477,7 +3489,7 @@ end
                 Items["Inactive"] = Instances:Create("TextButton", {
                     Parent = Data.PageHolder.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = NewTab.Name,
@@ -3540,7 +3552,7 @@ end
             Items["Palette"] = Instances:Create("TextButton", {
                 Parent = Items["ColorpickerWindow"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(0, 0, 0),
                 BorderColor3 = FromRGB(42, 49, 45),
                 Text = "",
@@ -3663,7 +3675,7 @@ end
             Items["Alpha"] = Instances:Create("TextButton", {
                 Parent = Items["ColorpickerWindow"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(0, 0, 0),
                 BorderColor3 = FromRGB(42, 49, 45),
                 Text = "",
@@ -3745,7 +3757,7 @@ end
                 Items["ColorpickerButton"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(12, 12, 12),
                     Text = "",
@@ -3879,7 +3891,7 @@ end
                 Items["Palette"] = Instances:Create("TextButton", {
                     Parent = ColorTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(42, 49, 45),
                     Text = "",
@@ -4002,7 +4014,7 @@ end
                 Items["Alpha"] = Instances:Create("TextButton", {
                     Parent = ColorTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(0, 0, 0),
                     BorderColor3 = FromRGB(42, 49, 45),
                     Text = "",
@@ -4250,7 +4262,7 @@ end
                 Items["RGBColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "RGB:",
@@ -4267,7 +4279,7 @@ end
                 Items["HEXColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "HEX:",
@@ -4284,7 +4296,7 @@ end
                 Items["HSVColor"] = Instances:Create("TextLabel", {
                     Parent = OtherTabItems["PageContent"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "HSV:",
@@ -4695,7 +4707,7 @@ end
                 Items["KeyButton"] = Instances:Create("TextButton", {
                     Parent = Data.Parent.Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     TextTransparency = 0.4000000059604645,
                     Text = "MB2",
@@ -4724,7 +4736,7 @@ end
                 Items["Toggle"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Toggle",
@@ -4749,7 +4761,7 @@ end
                 Items["Hold"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Hold",
@@ -4767,7 +4779,7 @@ end
                 Items["Always"] = Instances:Create("TextButton", {
                     Parent = Items["KeybindWindow"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "Always",
@@ -5118,7 +5130,7 @@ end
                 Items["Text"] = Instances:Create("TextLabel", {
                     Parent = Items["Textbox"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Data.Name,
@@ -5163,7 +5175,7 @@ end
                 Items["Input"] = Instances:Create("TextBox", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     PlaceholderColor3 = FromRGB(185, 185, 185),
                     PlaceholderText = Data.Placeholder,
                     TextSize = 9,
@@ -5293,7 +5305,7 @@ end
                 Items["Input"] = Instances:Create("TextBox", {
                     Parent = Items["Search"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = "",
@@ -5440,7 +5452,7 @@ end
                 local OptionButton = Instances:Create("TextButton", {
                     Parent = Items["List"].Instance,
                     Name = "\0",
-                    FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                    FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                     TextColor3 = FromRGB(235, 235, 235),
                     BorderColor3 = FromRGB(0, 0, 0),
                     Text = Option,
@@ -5631,7 +5643,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Watermark"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Name,
@@ -5698,13 +5710,13 @@ Library.KeybindList = function(self)
         Items["Title"] = Instances:Create("TextLabel", {
             Parent = Items["KeybindList"].Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
             TextColor3 = FromRGB(235, 235, 235),
             BorderColor3 = FromRGB(0, 0, 0),
             Text = "Keybinds",
             Size = UDim2New(1, 0, 0, 18),
             BackgroundTransparency = 1,
-            Position = UDim2New(0, 8, 0, 2),
+            Position = UDim2New(0, 8, 0, -2),
             BorderSizePixel = 0,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextSize = 9,
@@ -5785,7 +5797,7 @@ Library.KeybindList = function(self)
         local NewKey = Instances:Create("TextLabel", {
             Parent = KeyFrame.Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
             TextColor3 = FromRGB(235, 235, 235),
             BorderColor3 = FromRGB(0, 0, 0),
             Text = Key .. " - " .. Name,
@@ -5805,7 +5817,7 @@ Library.KeybindList = function(self)
         local ModeBadge = Instances:Create("TextLabel", {
             Parent = KeyFrame.Instance,
             Name = "\0",
-            FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+            FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
             TextColor3 = FromRGB(202, 243, 255),
             BorderColor3 = FromRGB(0, 0, 0),
             Text = Mode:sub(1, 3),
@@ -5887,7 +5899,7 @@ end
             Items["Title"] = Instances:Create("TextLabel", {
                 Parent = Items["Notification"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Title,
@@ -5904,7 +5916,7 @@ end
             Items["Description"] = Instances:Create("TextLabel", {
                 Parent = Items["Notification"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 TextTransparency = 0.4000000059604645,
                 Text = Description,
@@ -6005,7 +6017,7 @@ end
             Items["Title"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Inventory",
@@ -6092,7 +6104,7 @@ end
             Items["PlayerHealth"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Health: ",
@@ -6109,7 +6121,7 @@ end
             Items["PlayerDistance"] = Instances:Create("TextLabel", {
                 Parent = Items["InventoryViewer"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "Distance:  studs",
@@ -6501,7 +6513,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Section"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Section.Name,
@@ -6914,7 +6926,7 @@ end
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Label"].Instance,
                 Name = "\0",
-                FontFace = Library.Font or Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+                FontFace = Library.Font or Font.fromEnum(Enum.Font.SourceSans),
                 TextColor3 = FromRGB(235, 235, 235),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = BlankElement.Name,
